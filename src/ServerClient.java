@@ -18,8 +18,8 @@ public class ServerClient implements Runnable {
         this.server = server;
 
         try {
-            this.in = new DataInputStream(socket.getInputStream());
-            this.out = new DataOutputStream(socket.getOutputStream());
+            this.in = new DataInputStream(this.socket.getInputStream());
+            this.out = new DataOutputStream(this.socket.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -36,11 +36,11 @@ public class ServerClient implements Runnable {
 
     @Override
     public void run() {
-        while (isConnected) {
+        while (this.isConnected) {
             try {
                 String received = this.in.readUTF();
                 if (received.equals("\\quit")) {
-                    isConnected = false;
+                    this.isConnected = false;
                     this.server.removeClient(this);
                 } else {
                     this.server.sendToAllClients("<" + this.name + "> : " + received);
@@ -52,6 +52,6 @@ public class ServerClient implements Runnable {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 }

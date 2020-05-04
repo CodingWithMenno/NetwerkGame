@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class Server {
 
 
-    private final int port = 10000;
+    private final int port = 500;
     private ServerSocket serverSocket;
 
     private ArrayList<ServerClient> clients = new ArrayList<>();
@@ -38,7 +38,6 @@ public class Server {
                 Socket socket = this.serverSocket.accept();
 
                 System.out.println("Client connected via address: " + socket.getInetAddress().getHostAddress());
-                System.out.println("Connected clients: " + this.clients.size());
                 DataInputStream in = new DataInputStream(socket.getInputStream());
                 String nickname = in.readUTF();
 
@@ -47,6 +46,8 @@ public class Server {
                 t.start();
                 this.clientThreads.put(nickname, t);
                 this.clients.add(serverClient);
+
+                System.out.println("Connected clients: " + this.clients.size());
 
                 for (ServerClient c : clients) {
                     c.writeUTF("Client connected via address: " + socket.getInetAddress().getHostAddress());

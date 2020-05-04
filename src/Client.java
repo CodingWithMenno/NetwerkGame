@@ -10,9 +10,11 @@ public class Client {
     private int port;
     private boolean isConnected = true;
 
+    private Socket socket;
+
 
     public static void main(String[] args) {
-        Client client = new Client("maxwell.bps-software.nl", 10000);
+        Client client = new Client("localhost", 500);
         client.connect();
     }
 
@@ -27,7 +29,7 @@ public class Client {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            Socket socket = new Socket(this.hostname, this.port);
+            this.socket = new Socket(this.hostname, this.port);
 
             DataInputStream in = new DataInputStream(socket.getInputStream());
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -55,15 +57,17 @@ public class Client {
                 out.writeUTF(input);
                 //System.out.print("Sended: " + input);
             }
-            isConnected = false;
 
-            socket.close();
+            this.isConnected = false;
+
             try {
+                System.out.println("You are now disconnected");
                 readSocketThread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
+            socket.close();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -73,8 +77,7 @@ public class Client {
 
     private void receiveDataFromSocket(DataInputStream in) {
         String received = "";
-        while (isConnected) {
-
+        while (this.isConnected) {
             try {
                 received = in.readUTF();
                 System.out.println(received);
@@ -86,7 +89,6 @@ public class Client {
 
 
     public void writeStringToSocket(Socket socket, String text) {
-
         try {
             socket.getOutputStream().write(text.getBytes());
         } catch (IOException e) {
