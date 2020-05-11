@@ -4,6 +4,7 @@ import client.interfaces.Interface;
 import client.interfaces.MainMenu;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -33,6 +34,7 @@ public class Client extends Application {
     // Other variables
     private ResizableCanvas canvas;
     private static StackPane mainPane;
+    private static Stage stage;
 
     private MainMenu mainMenu;
     private ResourceLoader resourceLoader;
@@ -50,7 +52,8 @@ public class Client extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage primaryStage) throws Exception {
+        stage = primaryStage;
         FXGraphics2D g2d = new FXGraphics2D(canvas.getGraphicsContext2D());
 
         last = -1;
@@ -84,12 +87,12 @@ public class Client extends Application {
         stage.setMinHeight(1080);
         stage.setMaxHeight(1080);
         stage.setResizable(false);
+        stage.centerOnScreen();
         stage.setOnCloseRequest(event -> {
             drawThread.shutdown();
             updateThread.shutdown();
         });
         stage.show();
-        draw(g2d);
     }
 
     public void init() {
@@ -106,7 +109,7 @@ public class Client extends Application {
 
     private void draw(FXGraphics2D graphics) {
         graphics.setTransform(new AffineTransform());
-        graphics.setBackground(Color.RED);
+        graphics.setBackground(Color.WHITE);
         graphics.clearRect(0, 0, (int) canvas.getWidth(), (int) canvas.getHeight());
 
         if (Interface.getCurrentInterface() != null) {
@@ -190,5 +193,9 @@ public class Client extends Application {
 
     public static StackPane getMainPane() {
         return mainPane;
+    }
+
+    public static Stage getStage() {
+        return stage;
     }
 }

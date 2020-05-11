@@ -4,6 +4,7 @@ import client.Client;
 import client.ResourceLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+import javafx.stage.WindowEvent;
 import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
 
@@ -28,6 +29,9 @@ public class MainMenu extends Interface {
 
         this.exitButton = new Button("Exit");
         this.exitButton.setPrefSize(200, 50);
+        this.exitButton.setOnAction(event -> {
+            Client.getStage().fireEvent(new WindowEvent(Client.getStage(), WindowEvent.WINDOW_CLOSE_REQUEST));
+        });
 
         this.vBox.getChildren().addAll(this.hostButton, this.joinButton, this.exitButton);
         this.vBox.setTranslateX((1920 / 2) - 200 / 2);
@@ -44,6 +48,5 @@ public class MainMenu extends Interface {
 
     @Override
     public void update(ResizableCanvas canvas) {
-
     }
 }
