@@ -1,11 +1,41 @@
 package client.interfaces;
 
+import client.Client;
 import client.ResourceLoader;
-import client.interfaces.Interface;
+import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
 import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
 
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+
 public class MainMenu extends Interface {
+
+    private Button hostButton;
+    private Button joinButton;
+    private Button exitButton;
+    private VBox vBox;
+
+    public MainMenu() {
+        this.vBox = new VBox();
+
+        this.hostButton = new Button("Host");
+        this.hostButton.setPrefSize(200, 50);
+
+        this.joinButton = new Button("Join");
+        this.joinButton.setPrefSize(200, 50);
+
+        this.exitButton = new Button("Exit");
+        this.exitButton.setPrefSize(200, 50);
+
+        this.vBox.getChildren().addAll(this.hostButton, this.joinButton, this.exitButton);
+        this.vBox.setTranslateX((1920 / 2) - 200 / 2);
+        this.vBox.setTranslateY(1080 / 4 * 2.5);
+        this.vBox.setSpacing(20);
+
+        Client.getMainPane().getChildren().add(this.vBox);
+    }
 
     @Override
     public void draw(FXGraphics2D graphics) {
@@ -13,7 +43,7 @@ public class MainMenu extends Interface {
     }
 
     @Override
-    public void update(ResizableCanvas canvas, double delta) {
+    public void update(ResizableCanvas canvas) {
 
     }
 }

@@ -35,7 +35,7 @@ public class Player {
 
     }
 
-    public void update(ResizableCanvas canvas, double delta) {
+    public void update(ResizableCanvas canvas) {
 
     }
 }

@@ -6,6 +6,7 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
@@ -17,6 +18,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Client extends Application {
 
@@ -28,6 +32,7 @@ public class Client extends Application {
 
     // Other variables
     private ResizableCanvas canvas;
+    private static StackPane mainPane;
 
     private MainMenu mainMenu;
     private ResourceLoader resourceLoader;
@@ -46,35 +51,31 @@ public class Client extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-
-        BorderPane mainPane = new BorderPane();
-        canvas = new ResizableCanvas(g -> draw(g), mainPane);
-        mainPane.setCenter(canvas);
         FXGraphics2D g2d = new FXGraphics2D(canvas.getGraphicsContext2D());
 
         last = -1;
-        Thread updateThread = new Thread(() -> {
-            while (this.isRunning) {
+
+        ScheduledExecutorService updateThread = Executors
+                .newSingleThreadScheduledExecutor();
+        updateThread.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
                 long now = System.currentTimeMillis();
                 if (last == -1)
                     last = now;
-                if (last - now > 1.5) {
-                    update((now - last) / 1000000000.0);
-                    last = now;
-                } else {
-                    last += now;
-                }
+                update();
+                last = now;
             }
-        });
-        updateThread.start();
+        }, 0, 1000 / 60, TimeUnit.MILLISECONDS);
 
-        Thread drawThread = new Thread( () -> {
-            while (this.isRunning) {
+        ScheduledExecutorService drawThread = Executors
+                .newSingleThreadScheduledExecutor();
+        updateThread.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
                 draw(g2d);
             }
-        });
-        drawThread.start();
-
+        }, 0, 1000 / 60, TimeUnit.MILLISECONDS);
 
         stage.setScene(new Scene(mainPane));
         stage.setTitle("NetwerkGame");
@@ -83,11 +84,19 @@ public class Client extends Application {
         stage.setMinHeight(1080);
         stage.setMaxHeight(1080);
         stage.setResizable(false);
+        stage.setOnCloseRequest(event -> {
+            drawThread.shutdown();
+            updateThread.shutdown();
+        });
         stage.show();
         draw(g2d);
     }
 
     public void init() {
+        mainPane = new StackPane();
+        canvas = new ResizableCanvas(g -> draw(g), mainPane);
+        mainPane.getChildren().add(canvas);
+
         this.mainMenu = new MainMenu();
         Interface.setInterface(this.mainMenu);
 
@@ -97,17 +106,17 @@ public class Client extends Application {
 
     private void draw(FXGraphics2D graphics) {
         graphics.setTransform(new AffineTransform());
-        graphics.setBackground(Color.WHITE);
-        graphics.clearRect(0, 0, (int)canvas.getWidth(), (int)canvas.getHeight());
+        graphics.setBackground(Color.RED);
+        graphics.clearRect(0, 0, (int) canvas.getWidth(), (int) canvas.getHeight());
 
         if (Interface.getCurrentInterface() != null) {
             Interface.getCurrentInterface().draw(graphics);
         }
     }
 
-    private void update(double delta) {
+    private void update() {
         if (Interface.getCurrentInterface() != null) {
-            Interface.getCurrentInterface().update(this.canvas, delta);
+            Interface.getCurrentInterface().update(this.canvas);
         }
     }
 
@@ -177,5 +186,9 @@ public class Client extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static StackPane getMainPane() {
+        return mainPane;
     }
 }

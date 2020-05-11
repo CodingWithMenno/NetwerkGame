@@ -20,5 +20,5 @@ public abstract class Interface {
     }
 
     public abstract void draw(FXGraphics2D graphics);
-    public abstract void update(ResizableCanvas canvas, double delta);
+    public abstract void update(ResizableCanvas canvas);
 }
