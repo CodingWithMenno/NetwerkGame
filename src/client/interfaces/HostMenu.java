@@ -35,6 +35,7 @@ public class HostMenu extends Interface {
     private Label hostLabel;
     private Button exitButton;
     private Label statusLabel;
+    private Button updateButton;
 
     public HostMenu() {
         Thread serverThread = new Thread(() -> startNewServer());
@@ -80,6 +81,19 @@ public class HostMenu extends Interface {
         this.hostLabel.setPrefSize(395, 100);
         this.hostLabel.setTranslateX(-30);
 
+        this.updateButton = new Button("Update");
+        this.updateButton.setPrefSize(200, 50);
+        this.updateButton.setFont(Font.font("Helvetica", FontWeight.BOLD, 20));
+        this.updateButton.setOnAction(event -> {
+            if (this.playerConnected && this.updateButton.getText().equals("Update")) {
+                this.statusLabel.setText("A friend connected");
+                this.updateButton.setText("Go to the lobby");
+            } else if (this.updateButton.getText().equals("Go to the lobby")) {
+                Client.getMainPane().getChildren().remove(this.vBox);
+                Interface.setInterface(new Lobby(this.socket));
+            }
+        });
+
         this.exitButton = new Button("Back");
         this.exitButton.setPrefSize(200, 50);
         this.exitButton.setFont(Font.font("Helvetica", FontWeight.BOLD, 20));
@@ -89,10 +103,10 @@ public class HostMenu extends Interface {
             Interface.setInterface(new MainMenu());
         });
 
-        this.vBox.getChildren().addAll(this.statusLabel, this.hostLabel, this.exitButton);
+        this.vBox.getChildren().addAll(this.statusLabel, this.hostLabel, this.updateButton, this.exitButton);
         this.vBox.setTranslateX((1920 / 2) - 200 / 2);
-        this.vBox.setTranslateY(1080 / 4 * 2);
-        this.vBox.setSpacing(40);
+        this.vBox.setTranslateY(1080 / 4 * 1.7);
+        this.vBox.setSpacing(20);
 
         Client.getMainPane().getChildren().add(this.vBox);
     }
@@ -104,9 +118,6 @@ public class HostMenu extends Interface {
 
     @Override
     public void update(ResizableCanvas canvas) {
-        if (this.playerConnected) {
-            Interface.setInterface(new Lobby(this.socket));
-        }
     }
 
     private void startNewServer() {

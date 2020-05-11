@@ -46,7 +46,7 @@ public class MainMenu extends Interface {
         this.vBox.getChildren().addAll(this.hostButton, this.joinButton, this.exitButton);
         this.vBox.setTranslateX((1920 / 2) - 200 / 2);
         this.vBox.setTranslateY(1080 / 4 * 2);
-        this.vBox.setSpacing(20);
+        this.vBox.setSpacing(50);
 
         Client.getMainPane().getChildren().add(this.vBox);
     }

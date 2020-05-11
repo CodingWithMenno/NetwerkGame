@@ -70,7 +70,7 @@ public class Client extends Application {
             public void run() {
                 draw(g2d);
             }
-        }, 0, 1000 / 59, TimeUnit.MILLISECONDS);
+        }, 0, 1000 / 60, TimeUnit.MILLISECONDS);
 
         stage.setScene(new Scene(mainPane));
         stage.setTitle("NetwerkGame");
