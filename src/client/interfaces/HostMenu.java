@@ -56,9 +56,6 @@ public class HostMenu extends Interface {
             }
         }
 
-        this.hostname = "localhost";
-        connect();
-
         String ip = "";
         try (final DatagramSocket socket = new DatagramSocket()) {
             socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
@@ -68,6 +65,10 @@ public class HostMenu extends Interface {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
+
+        this.hostname = ip;
+        connect();
+        
 
         this.vBox = new VBox();
 
