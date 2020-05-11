@@ -1,10 +1,10 @@
+package server;
+
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
 
 public class Server {
@@ -37,7 +37,7 @@ public class Server {
                 System.out.println("Waiting for clients...");
                 Socket socket = this.serverSocket.accept();
 
-                System.out.println("Client connected via address: " + socket.getInetAddress().getHostAddress());
+                System.out.println("client.Client connected via address: " + socket.getInetAddress().getHostAddress());
                 DataInputStream in = new DataInputStream(socket.getInputStream());
                 String nickname = in.readUTF();
 
@@ -50,7 +50,7 @@ public class Server {
                 System.out.println("Connected clients: " + this.clients.size());
 
                 for (ServerClient c : clients) {
-                    c.writeUTF("Client connected via address: " + socket.getInetAddress().getHostAddress());
+                    c.writeUTF("client.Client connected via address: " + socket.getInetAddress().getHostAddress());
                 }
             }
 
