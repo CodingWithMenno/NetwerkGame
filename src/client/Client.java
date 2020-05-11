@@ -25,12 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 public class Client extends Application {
 
-    // Server related
-    private String hostname;
-    private int port;
-    private boolean isConnected = true;
-    private Socket socket;
-
     // Other variables
     private ResizableCanvas canvas;
     private static StackPane mainPane;
@@ -40,8 +34,6 @@ public class Client extends Application {
     private ResourceLoader resourceLoader;
 
     private long last;
-
-    private boolean isRunning = true;
 
 
     public static void main(String[] args) {
@@ -78,7 +70,7 @@ public class Client extends Application {
             public void run() {
                 draw(g2d);
             }
-        }, 0, 1000 / 60, TimeUnit.MILLISECONDS);
+        }, 0, 1000 / 59, TimeUnit.MILLISECONDS);
 
         stage.setScene(new Scene(mainPane));
         stage.setTitle("NetwerkGame");
@@ -120,74 +112,6 @@ public class Client extends Application {
     private void update() {
         if (Interface.getCurrentInterface() != null) {
             Interface.getCurrentInterface().update(this.canvas);
-        }
-    }
-
-    public void connect() {
-        System.out.println("Connecting to server: " + this.hostname + " on port " + this.port);
-
-        Scanner scanner = new Scanner(System.in);
-
-        try {
-            this.socket = new Socket(this.hostname, this.port);
-
-            DataInputStream in = new DataInputStream(socket.getInputStream());
-            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-
-
-            System.out.print("Enter a nickname: ");
-            String nickName = scanner.nextLine();
-            out.writeUTF(nickName);
-
-            System.out.println("You are now connected as " + nickName);
-
-            String input = "";
-
-            //boolean isRunning = true;
-
-            Thread readSocketThread = new Thread( () -> {
-                receiveDataFromSocket(in);
-            });
-
-            readSocketThread.start();
-
-            while (!input.equals("\\quit")) {
-                //System.out.print("(" +nickName + "): ");
-                input = scanner.nextLine();
-                out.writeUTF(input);
-                //System.out.print("Sended: " + input);
-            }
-
-            this.isConnected = false;
-
-            System.out.println("You are now disconnected");
-            readSocketThread.interrupt();
-
-            socket.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private void receiveDataFromSocket(DataInputStream in) {
-        String received = "";
-        while (this.isConnected) {
-            try {
-                received = in.readUTF();
-                System.out.println(received);
-            } catch (IOException e) {
-            }
-        }
-    }
-
-
-    public void writeStringToSocket(Socket socket, String text) {
-        try {
-            socket.getOutputStream().write(text.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

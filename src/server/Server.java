@@ -1,70 +1,85 @@
 package server;
 
+import client.Client;
+
+import java.awt.geom.Point2D;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Server {
 
 
-    private final int port = 500;
+    private int port;
     private ServerSocket serverSocket;
 
-    private ArrayList<ServerClient> clients = new ArrayList<>();
-    //private ArrayList<Thread> clientThreads = new ArrayList<>();
-    private HashMap<String, Thread> clientThreads = new HashMap<>();
+    private HashMap<String, Socket> clients = new HashMap();
+
+    private int status; // 0 = not ready to accept clients, 1 = ready to accept clients, 2 = all possible clients accepted
+
+    private Point2D player1;
+    private Point2D player2;
 
 
-    public static void main(String[] args) {
-
-        System.out.println("Loading server");
-        Server server = new Server();
-        server.connect();
+    public Server(int port) {
+        this.port = port;
+        this.status = 0;
     }
-
 
     public void connect() {
 
         try {
             this.serverSocket = new ServerSocket(port);
 
-            boolean isRunning = true;
-            while (isRunning) {
+            this.status = 1;
+
+            while (this.clients.size() != 2) {
 
                 System.out.println("Waiting for clients...");
                 Socket socket = this.serverSocket.accept();
 
-                System.out.println("client.Client connected via address: " + socket.getInetAddress().getHostAddress());
-                DataInputStream in = new DataInputStream(socket.getInputStream());
-                String nickname = in.readUTF();
+                System.out.println("Client connected via address: " + socket.getInetAddress().getHostAddress());
 
-                ServerClient serverClient = new ServerClient(socket, nickname, this);
-                Thread t = new Thread(serverClient);
-                t.start();
-                this.clientThreads.put(nickname, t);
-                this.clients.add(serverClient);
+                if (this.clients.size() == 0) {
+                    this.clients.put("player1", socket);
+                } else {
+                    this.clients.put("player2", socket);
+                }
 
                 System.out.println("Connected clients: " + this.clients.size());
-
-                for (ServerClient c : clients) {
-                    c.writeUTF("client.Client connected via address: " + socket.getInetAddress().getHostAddress());
-                }
             }
 
-            this.serverSocket.close();
+            System.out.println("all connected");
+            this.status = 2;
 
+            sendToAllClients("connected");
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Server closed");
         }
     }
 
+    private void handleInformation() {
+        boolean isRunning = true;
+        while (isRunning) {
+
+        }
+    }
+
+
     public void sendToAllClients(String text) {
-        for (ServerClient client : clients) {
-            client.writeUTF(text);
+        for (String player : this.clients.keySet()) {
+            try {
+                DataOutputStream out = new DataOutputStream(this.clients.get(player).getOutputStream());
+                out.writeUTF(text);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -78,19 +93,15 @@ public class Server {
         }
     }
 
-    public void removeClient(ServerClient serverClient) {
-        String nickname = serverClient.getName();
-        this.clients.remove(serverClient);
+    public void removeClient() {
 
-        Thread t = this.clientThreads.get(nickname);
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    }
 
-        this.clientThreads.remove(nickname);
+    public ServerSocket getServerSocket() {
+        return serverSocket;
+    }
 
-        System.out.println("Connected clients: " + this.clients.size());
+    public int getStatus() {
+        return status;
     }
 }

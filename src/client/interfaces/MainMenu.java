@@ -4,12 +4,11 @@ import client.Client;
 import client.ResourceLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.WindowEvent;
 import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
-
-import java.awt.*;
-import java.awt.geom.AffineTransform;
 
 public class MainMenu extends Interface {
 
@@ -23,19 +22,30 @@ public class MainMenu extends Interface {
 
         this.hostButton = new Button("Host");
         this.hostButton.setPrefSize(200, 50);
+        this.hostButton.setFont(Font.font("Helvetica", FontWeight.BOLD, 20));
+        this.hostButton.setOnAction(event -> {
+            Client.getMainPane().getChildren().remove(this.vBox);
+            Interface.setInterface(new HostMenu());
+        });
 
         this.joinButton = new Button("Join");
         this.joinButton.setPrefSize(200, 50);
+        this.joinButton.setFont(Font.font("Helvetica", FontWeight.BOLD, 20));
+        this.joinButton.setOnAction(event -> {
+            Client.getMainPane().getChildren().remove(this.vBox);
+            Interface.setInterface(new JoinMenu());
+        });
 
         this.exitButton = new Button("Exit");
         this.exitButton.setPrefSize(200, 50);
+        this.exitButton.setFont(Font.font("Helvetica", FontWeight.BOLD, 20));
         this.exitButton.setOnAction(event -> {
             Client.getStage().fireEvent(new WindowEvent(Client.getStage(), WindowEvent.WINDOW_CLOSE_REQUEST));
         });
 
         this.vBox.getChildren().addAll(this.hostButton, this.joinButton, this.exitButton);
         this.vBox.setTranslateX((1920 / 2) - 200 / 2);
-        this.vBox.setTranslateY(1080 / 4 * 2.5);
+        this.vBox.setTranslateY(1080 / 4 * 2);
         this.vBox.setSpacing(20);
 
         Client.getMainPane().getChildren().add(this.vBox);
