@@ -121,7 +121,7 @@ public class JoinMenu extends Interface {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Interface.setInterface(new Lobby(this.socket));
+            Interface.setInterface(new Lobby(this.socket, false));
         }
     }
 }

@@ -18,7 +18,7 @@ public class Server {
     private int port;
     private ServerSocket serverSocket;
 
-    private HashMap<String, Socket> clients = new HashMap();
+    private ArrayList<ServerClient> serverClients = new ArrayList<>();
 
     private int status; // 0 = not ready to accept clients, 1 = ready to accept clients, 2 = all possible clients accepted
 
@@ -38,23 +38,22 @@ public class Server {
 
             this.status = 1;
 
-            while (this.clients.size() != 2) {
+            while (this.serverClients.size() != 2) {
 
                 System.out.println("Waiting for clients...");
                 Socket socket = this.serverSocket.accept();
 
                 System.out.println("Client connected via address: " + socket.getInetAddress().getHostAddress());
 
-                if (this.clients.size() == 0) {
-                    this.clients.put("player1", socket);
+                if (this.serverClients.size() == 0) {
+                    this.serverClients.add(new ServerClient(socket, "Player 1", this));
                 } else {
-                    this.clients.put("player2", socket);
+                    this.serverClients.add(new ServerClient(socket, "Player 2", this));
                 }
 
-                System.out.println("Connected clients: " + this.clients.size());
+                System.out.println("Connected clients: " + this.serverClients.size());
             }
 
-            System.out.println("all connected");
             this.status = 2;
 
             sendToAllClients("connected");
@@ -67,15 +66,14 @@ public class Server {
     private void handleInformation() {
         boolean isRunning = true;
         while (isRunning) {
-
         }
     }
 
 
     public void sendToAllClients(String text) {
-        for (String player : this.clients.keySet()) {
+        for (ServerClient client : this.serverClients) {
             try {
-                DataOutputStream out = new DataOutputStream(this.clients.get(player).getOutputStream());
+                DataOutputStream out = new DataOutputStream(client.getOut());
                 out.writeUTF(text);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -85,7 +83,6 @@ public class Server {
 
 
     public void writeStringToSocket(Socket socket, String text) {
-
         try {
             socket.getOutputStream().write(text.getBytes());
         } catch (IOException e) {

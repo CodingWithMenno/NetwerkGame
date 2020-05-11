@@ -68,7 +68,7 @@ public class HostMenu extends Interface {
 
         this.hostname = ip;
         connect();
-        
+
 
         this.vBox = new VBox();
 
@@ -91,7 +91,7 @@ public class HostMenu extends Interface {
                 this.updateButton.setText("Go to the lobby");
             } else if (this.updateButton.getText().equals("Go to the lobby")) {
                 Client.getMainPane().getChildren().remove(this.vBox);
-                Interface.setInterface(new Lobby(this.socket));
+                Interface.setInterface(new Lobby(this.socket, true));
             }
         });
 
