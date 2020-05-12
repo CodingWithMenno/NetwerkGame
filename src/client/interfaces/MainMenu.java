@@ -15,10 +15,18 @@ public class MainMenu extends Interface {
     private Button hostButton;
     private Button joinButton;
     private Button exitButton;
+    private Button practiceButton;
     private VBox vBox;
 
     public MainMenu() {
         this.vBox = new VBox();
+
+        this.practiceButton = new Button("Practice");
+        this.practiceButton.setPrefSize(200, 50);
+        this.practiceButton.setFont(Font.font("Helvetica", FontWeight.BOLD, 20));
+        this.practiceButton.setOnAction(event -> {
+            // Go practice offline
+        });
 
         this.hostButton = new Button("Host");
         this.hostButton.setPrefSize(200, 50);
@@ -43,7 +51,7 @@ public class MainMenu extends Interface {
             Client.getStage().fireEvent(new WindowEvent(Client.getStage(), WindowEvent.WINDOW_CLOSE_REQUEST));
         });
 
-        this.vBox.getChildren().addAll(this.hostButton, this.joinButton, this.exitButton);
+        this.vBox.getChildren().addAll(this.practiceButton, this.hostButton, this.joinButton, this.exitButton);
         this.vBox.setTranslateX((1920 / 2) - 200 / 2);
         this.vBox.setTranslateY(1080 / 4 * 2);
         this.vBox.setSpacing(50);
