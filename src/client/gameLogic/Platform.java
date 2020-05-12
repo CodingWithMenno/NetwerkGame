@@ -17,6 +17,6 @@ public class Platform extends GameObject {
     @Override
     public void draw(FXGraphics2D graphics) {
         graphics.setColor(Color.RED);
-        graphics.drawRect((int) (super.getPosition().getX() - GameInterface.getCamera().getxOffset()), (int) super.getPosition().getY(), (int) super.getShape().getWidth(), (int) super.getShape().getHeight());
+        graphics.drawRect((int) (super.getPosition().getX() - GameInterface.getCamera().getxOffset()), (int) (super.getPosition().getY() - GameInterface.getCamera().getyOffset()), (int) super.getShape().getWidth(), (int) super.getShape().getHeight());
     }
 }

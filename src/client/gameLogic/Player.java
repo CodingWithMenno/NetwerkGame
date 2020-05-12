@@ -17,7 +17,7 @@ public class Player extends GameObject {
     private Color color;
 
     private int horizontalSpeed;
-    private int verticalSpeed;
+    private double verticalSpeed;
 
     public Player(Point2D position, Rectangle2D shape, Color color) {
         super(position, shape);
@@ -31,7 +31,7 @@ public class Player extends GameObject {
 
     public void draw(FXGraphics2D graphics) {
         graphics.setColor(this.color);
-        graphics.drawRect((int) (this.shape.getX() - GameInterface.getCamera().getxOffset()), (int) this.shape.getY(), (int) this.shape.getWidth(), (int) this.shape.getHeight());
+        graphics.drawRect((int) (this.shape.getX() - GameInterface.getCamera().getxOffset()), (int) (this.shape.getY() - GameInterface.getCamera().getyOffset()), (int) this.shape.getWidth(), (int) this.shape.getHeight());
     }
 
     public void update(ResizableCanvas canvas) {
@@ -52,7 +52,7 @@ public class Player extends GameObject {
         switch (keyCode) {
             case W:
                 if (isOnGround) {
-                    setVerticalSpeed(-15);
+                    setVerticalSpeed(-10);
                 }
                 break;
             case A:
@@ -63,7 +63,7 @@ public class Player extends GameObject {
         }
 
         if (!collisionToTheRight) {
-            setHorizontalSpeed(5);
+            setHorizontalSpeed(7);
         }
 
         if (!isOnGround) {
@@ -97,7 +97,7 @@ public class Player extends GameObject {
     }
 
     private void fall() {
-        int gravity = 1;
+        double gravity = 0.6;
 
         if (this.verticalSpeed + gravity > 5) {
             setVerticalSpeed(this.verticalSpeed);
@@ -111,7 +111,7 @@ public class Player extends GameObject {
         super.setPosition(new Point2D.Double(super.getPosition().getX() + horizontalSpeed, super.getPosition().getY()));
     }
 
-    public void setVerticalSpeed(int verticalSpeed) {
+    public void setVerticalSpeed(double verticalSpeed) {
         this.verticalSpeed = verticalSpeed;
         super.setPosition(new Point2D.Double(super.getPosition().getX(), super.getPosition().getY() + verticalSpeed));
     }
