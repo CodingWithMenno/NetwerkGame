@@ -1,5 +1,6 @@
 package client.gameLogic;
 
+import client.interfaces.GameInterface;
 import org.jfree.fx.FXGraphics2D;
 
 import java.awt.*;
@@ -15,6 +16,7 @@ public class Platform extends GameObject {
 
     @Override
     public void draw(FXGraphics2D graphics) {
-        graphics.fill(super.getShape());
+        graphics.setColor(Color.RED);
+        graphics.drawRect((int) (super.getPosition().getX() - GameInterface.getCamera().getxOffset()), (int) super.getPosition().getY(), (int) super.getShape().getWidth(), (int) super.getShape().getHeight());
     }
 }

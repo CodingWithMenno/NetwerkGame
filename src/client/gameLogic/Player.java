@@ -1,6 +1,7 @@
 package client.gameLogic;
 
 import client.Client;
+import client.interfaces.GameInterface;
 import javafx.scene.input.KeyCode;
 import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
@@ -30,7 +31,7 @@ public class Player extends GameObject {
 
     public void draw(FXGraphics2D graphics) {
         graphics.setColor(this.color);
-        graphics.fill(this.shape);
+        graphics.drawRect((int) (this.shape.getX() - GameInterface.getCamera().getxOffset()), (int) this.shape.getY(), (int) this.shape.getWidth(), (int) this.shape.getHeight());
     }
 
     public void update(ResizableCanvas canvas) {
