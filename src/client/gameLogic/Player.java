@@ -23,7 +23,7 @@ public class Player extends GameObject {
         this.shape = shape;
         this.color = color;
 
-        this.horizontalSpeed = 0;
+        this.horizontalSpeed = 5;
         this.verticalSpeed = 0;
     }
 
@@ -46,23 +46,40 @@ public class Player extends GameObject {
         }
 
         boolean isOnGround = onGround();
+        boolean collisionToTheRight = checkRightCollision();
 
         switch (keyCode) {
             case W:
                 if (isOnGround) {
-                    setVerticalSpeed(-20);
+                    setVerticalSpeed(-15);
                 }
                 break;
             case A:
-                setHorizontalSpeed(-5);
+                if (!collisionToTheRight) {
+                    setHorizontalSpeed(-5);
+                }
                 break;
         }
 
-        setHorizontalSpeed(5);
+        if (!collisionToTheRight) {
+            setHorizontalSpeed(5);
+        }
 
         if (!isOnGround) {
             fall();
         }
+    }
+
+    private boolean checkRightCollision() {
+        Line2D rightSide = new Line2D.Double(getPosition().getX() + this.shape.getWidth(), getPosition().getY(),
+                getPosition().getX() + this.shape.getWidth(), getPosition().getY() + (this.shape.getHeight() / 2));
+
+        for (GameObject gameObject : GameObject.getGameObjects()) {
+            if (rightSide.intersects(gameObject.getShape())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean onGround() {
@@ -71,6 +88,7 @@ public class Player extends GameObject {
 
         for (GameObject gameObject : GameObject.getGameObjects()) {
             if (feet.intersects(gameObject.getShape())) {
+                super.setPosition(new Point2D.Double(super.getPosition().getX(), gameObject.getPosition().getY() - this.shape.getHeight() / 2));
                 return true;
             }
         }
@@ -80,7 +98,7 @@ public class Player extends GameObject {
     private void fall() {
         int gravity = 1;
 
-        if (this.verticalSpeed + gravity > 20) {
+        if (this.verticalSpeed + gravity > 5) {
             setVerticalSpeed(this.verticalSpeed);
         }
 

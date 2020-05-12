@@ -25,7 +25,9 @@ public class GameInterface extends Interface {
 
         this.positionPlayer2 = new Rectangle2D.Double(0, 0, width, height);
 
-        GameObject.getGameObjects().add(new Platform(new Point2D.Double(0, 600), new Rectangle2D.Double(0, 600, 500, 40)));
+        GameObject.getGameObjects().add(new Platform(new Point2D.Double(0, 590), new Rectangle2D.Double(0, 600, 500, 40)));
+        GameObject.getGameObjects().add(new Platform(new Point2D.Double(500, 580), new Rectangle2D.Double(500, 590, 500, 40)));
+        GameObject.getGameObjects().add(new Platform(new Point2D.Double(1000, 580), new Rectangle2D.Double(1010, 590, 500, 40)));
 
         GameObject.getGameObjects().add(this.player);
     }
