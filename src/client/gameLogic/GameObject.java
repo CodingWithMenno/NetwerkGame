@@ -1,22 +1,22 @@
 package client.gameLogic;
 
+import org.jfree.fx.FXGraphics2D;
+import org.jfree.fx.ResizableCanvas;
+
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public class GameObject {
 
     private Point2D position;
-    private Shape shape;
-    private int width;
-    private int height;
+    private Rectangle2D shape;
     private static ArrayList<GameObject> gameObjects = new ArrayList<>(); // All the game objects
 
-    public GameObject(Point2D position, Shape shape, int width, int height) {
+    public GameObject(Point2D position, Rectangle2D shape) {
         this.position = position;
         this.shape = shape;
-        this.width = width;
-        this.height = height;
     }
 
     public Point2D getPosition() {
@@ -27,21 +27,19 @@ public class GameObject {
         this.position = position;
     }
 
-    public Shape getShape() {
+    public Rectangle2D getShape() {
         return shape;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
     }
 
     public static ArrayList<GameObject> getGameObjects() {
         return gameObjects;
     }
 
+    public void draw(FXGraphics2D graphics) {
 
+    }
+
+    public void update(ResizableCanvas canvas) {
+
+    }
 }

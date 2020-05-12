@@ -1,36 +1,99 @@
 package client.gameLogic;
 
+import client.Client;
+import javafx.scene.input.KeyCode;
 import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
 
 import java.awt.*;
-import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.util.Random;
+import java.awt.geom.Rectangle2D;
 
-public class Player extends PhysicsObject {
+public class Player extends GameObject {
 
-    private Ellipse2D shape;
+    private Rectangle2D shape;
     private Color color;
 
-    private int width;
-    private int height;
+    private int horizontalSpeed;
+    private int verticalSpeed;
 
-    public Player(Point2D position, Shape shape, int width, int height, Color color, int maxSpeed) {
-        super(position, shape, width, height, maxSpeed);
-        this.shape = new Ellipse2D.Double(super.getPosition().getX(), super.getPosition().getY(), this.width, this.height);
+    public Player(Point2D position, Rectangle2D shape, Color color) {
+        super(position, shape);
+        this.shape = shape;
         this.color = color;
-        this.width = width;
-        this.height = height;
+
+        this.horizontalSpeed = 0;
+        this.verticalSpeed = 0;
     }
 
 
     public void draw(FXGraphics2D graphics) {
-        this.shape = new Ellipse2D.Double(super.getPosition().getX(), super.getPosition().getY(), this.width, this.height);
-        graphics.draw(this.shape);
+        graphics.setColor(this.color);
+        graphics.fill(this.shape);
     }
 
     public void update(ResizableCanvas canvas) {
-        super.doPhysics();
+        calculateMovement();
+        this.shape = new Rectangle2D.Double(super.getPosition().getX(), super.getPosition().getY(), this.shape.getWidth(), this.shape.getHeight());
+    }
+
+    private void calculateMovement() {
+        KeyCode keyCode = Client.keyCode;
+
+        if (keyCode == null) {
+            keyCode = KeyCode.DIGIT0;
+        }
+
+        boolean isOnGround = onGround();
+
+        switch (keyCode) {
+            case W:
+                if (isOnGround) {
+                    setVerticalSpeed(-20);
+                }
+                break;
+            case A:
+                setHorizontalSpeed(-5);
+                break;
+        }
+
+        setHorizontalSpeed(5);
+
+        if (!isOnGround) {
+            fall();
+        }
+    }
+
+    private boolean onGround() {
+        Line2D feet = new Line2D.Double(getPosition().getX(), getPosition().getY() + this.shape.getHeight(),
+                getPosition().getX() + this.shape.getWidth(), getPosition().getY() + this.shape.getHeight());
+
+        for (GameObject gameObject : GameObject.getGameObjects()) {
+            if (feet.intersects(gameObject.getShape())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void fall() {
+        int gravity = 1;
+
+        if (this.verticalSpeed + gravity > 20) {
+            setVerticalSpeed(this.verticalSpeed);
+        }
+
+        setVerticalSpeed(this.verticalSpeed + gravity);
+    }
+
+    public void setHorizontalSpeed(int horizontalSpeed) {
+        this.horizontalSpeed = horizontalSpeed;
+        super.setPosition(new Point2D.Double(super.getPosition().getX() + horizontalSpeed, super.getPosition().getY()));
+    }
+
+    public void setVerticalSpeed(int verticalSpeed) {
+        this.verticalSpeed = verticalSpeed;
+        super.setPosition(new Point2D.Double(super.getPosition().getX(), super.getPosition().getY() + verticalSpeed));
     }
 }

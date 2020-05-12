@@ -25,7 +25,8 @@ public class MainMenu extends Interface {
         this.practiceButton.setPrefSize(200, 50);
         this.practiceButton.setFont(Font.font("Helvetica", FontWeight.BOLD, 20));
         this.practiceButton.setOnAction(event -> {
-            // Go practice offline
+            Client.getMainPane().getChildren().remove(this.vBox);
+            Interface.setInterface(new GameInterface());
         });
 
         this.hostButton = new Button("Host");

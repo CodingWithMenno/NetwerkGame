@@ -6,6 +6,7 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -34,6 +35,8 @@ public class Client extends Application {
     private ResourceLoader resourceLoader;
 
     private long last;
+
+    public static KeyCode keyCode;
 
 
     public static void main(String[] args) {
@@ -72,7 +75,10 @@ public class Client extends Application {
             }
         }, 0, 1000 / 60, TimeUnit.MILLISECONDS);
 
-        stage.setScene(new Scene(mainPane));
+        Scene scene = new Scene(mainPane);
+        scene.setOnKeyPressed(keyEvent -> keyCode = keyEvent.getCode());
+        scene.setOnKeyReleased(keyEvent -> keyCode = null);
+        stage.setScene(scene);
         stage.setTitle("NetwerkGame");
         stage.setMinWidth(1920);
         stage.setMaxWidth(1920);
