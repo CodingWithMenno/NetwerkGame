@@ -19,6 +19,11 @@ public class Server {
     private ServerSocket serverSocket;
 
     private ArrayList<ServerClient> serverClients = new ArrayList<>();
+    private HashMap<String, Thread> clientThreads = new HashMap<>();
+    private ArrayList<Socket> sockets = new ArrayList<>();
+
+    private boolean player1Ready = false;
+    private boolean player2Ready = false;
 
     private int status; // 0 = not ready to accept clients, 1 = ready to accept clients, 2 = all possible clients accepted
 
@@ -46,9 +51,20 @@ public class Server {
                 System.out.println("Client connected via address: " + socket.getInetAddress().getHostAddress());
 
                 if (this.serverClients.size() == 0) {
-                    this.serverClients.add(new ServerClient(socket, "Player 1", this));
+                    ServerClient serverClient = new ServerClient(socket, "Player 1", this);
+                    this.serverClients.add(serverClient);
+                    this.sockets.add(socket);
+                    Thread t = new Thread(serverClient);
+                    t.start();
+                    this.clientThreads.put("Player 1", t);
+
                 } else {
-                    this.serverClients.add(new ServerClient(socket, "Player 2", this));
+                    ServerClient serverClient = new ServerClient(socket, "Player 2", this);
+                    this.serverClients.add(serverClient);
+                    this.sockets.add(socket);
+                    Thread t = new Thread(serverClient);
+                    t.start();
+                    this.clientThreads.put("Player 2", t);
                 }
 
                 System.out.println("Connected clients: " + this.serverClients.size());
@@ -58,17 +74,21 @@ public class Server {
 
             sendToAllClients("connected");
 
+            while (!this.player1Ready || !this.player2Ready) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("wachten op ready's");
+            }
+
+            sendToAllClients("start game");
+
         } catch (IOException e) {
             System.out.println("Server closed");
         }
     }
-
-    private void handleInformation() {
-        boolean isRunning = true;
-        while (isRunning) {
-        }
-    }
-
 
     public void sendToAllClients(String text) {
         for (ServerClient client : this.serverClients) {
@@ -81,17 +101,19 @@ public class Server {
         }
     }
 
-
-    public void writeStringToSocket(Socket socket, String text) {
+    public void writeStringToOtherSocket(Socket socket, String text) {
         try {
-            socket.getOutputStream().write(text.getBytes());
+            DataOutputStream out = null;
+            if (socket.equals(this.sockets.get(0))) {
+                out = new DataOutputStream(this.sockets.get(1).getOutputStream());
+            } else {
+                out = new DataOutputStream(this.sockets.get(0).getOutputStream());
+            }
+
+            out.writeUTF(text);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void removeClient() {
-
     }
 
     public ServerSocket getServerSocket() {
@@ -100,5 +122,15 @@ public class Server {
 
     public int getStatus() {
         return status;
+    }
+
+    public void setPlayer1Ready(boolean player1Ready) {
+        System.out.println("player 1 ready");
+        this.player1Ready = player1Ready;
+    }
+
+    public void setPlayer2Ready(boolean player2Ready) {
+        System.out.println("player 2 ready");
+        this.player2Ready = player2Ready;
     }
 }

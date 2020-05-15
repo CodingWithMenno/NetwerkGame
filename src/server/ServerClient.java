@@ -41,7 +41,19 @@ public class ServerClient implements Runnable {
         while (isConnected) {
             try {
                 String received = this.in.readUTF();
-                this.server.sendToAllClients("<" + this.name + "> : " + received);
+
+                //System.out.println("received: " + received);
+
+                if (received.contains("START1")) {
+                    this.server.setPlayer1Ready(true);
+                } else if (received.contains("START2")) {
+                    this.server.setPlayer2Ready(true);
+                }
+
+                if (received.contains("position")) {
+                    this.server.writeStringToOtherSocket(this.socket, received);
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

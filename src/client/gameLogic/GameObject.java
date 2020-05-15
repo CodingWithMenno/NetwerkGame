@@ -23,7 +23,7 @@ public class GameObject {
     }
 
     public Point2D getPosition() {
-        return position;
+        return this.position;
     }
 
     public void setPosition(Point2D position) {
@@ -34,7 +34,7 @@ public class GameObject {
         return shape;
     }
 
-    public static ArrayList<GameObject> getGameObjects() {
+    public synchronized static ArrayList<GameObject> getGameObjects() {
         return gameObjects;
     }
 

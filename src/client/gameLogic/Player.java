@@ -19,13 +19,17 @@ public class Player extends GameObject {
     private int horizontalSpeed;
     private double verticalSpeed;
 
-    public Player(Point2D position, Rectangle2D shape, Color color) {
+    private boolean isControlled;
+
+    public Player(Point2D position, Rectangle2D shape, Color color, boolean isControlled) {
         super(position, shape);
         this.shape = shape;
         this.color = color;
 
         this.horizontalSpeed = 5;
         this.verticalSpeed = 0;
+
+        this.isControlled = isControlled;
     }
 
 
@@ -35,7 +39,9 @@ public class Player extends GameObject {
     }
 
     public void update(ResizableCanvas canvas) {
-        calculateMovement();
+        if (isControlled) {
+            calculateMovement();
+        }
         this.shape = new Rectangle2D.Double(super.getPosition().getX(), super.getPosition().getY(), this.shape.getWidth(), this.shape.getHeight());
     }
 
@@ -97,7 +103,7 @@ public class Player extends GameObject {
     }
 
     private void fall() {
-        double gravity = 0.6;
+        double gravity = 0.5;
 
         if (this.verticalSpeed + gravity > 5) {
             setVerticalSpeed(this.verticalSpeed);
@@ -114,5 +120,9 @@ public class Player extends GameObject {
     public void setVerticalSpeed(double verticalSpeed) {
         this.verticalSpeed = verticalSpeed;
         super.setPosition(new Point2D.Double(super.getPosition().getX(), super.getPosition().getY() + verticalSpeed));
+    }
+
+    public String positionToString() {
+        return getPosition().getX() + " " + getPosition().getY() + " ";
     }
 }

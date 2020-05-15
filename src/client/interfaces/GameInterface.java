@@ -10,14 +10,24 @@ import org.jfree.fx.ResizableCanvas;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 public class GameInterface extends Interface {
 
     private Player player;
 
-    private Rectangle2D positionPlayer2;
+    private Socket socket;
+    private DataInputStream in;
+    private DataOutputStream out;
+
+    private Player player2;
+    private boolean isOnline;
 
     private static Camera camera;
 
@@ -25,14 +35,14 @@ public class GameInterface extends Interface {
 
 
     public GameInterface() {
+        this.isOnline = false;
+
         Point2D position = new Point2D.Double(300, 200);
         int width = 20;
         int height = 20;
-        this.player = new Player(position, new Rectangle2D.Double(position.getX(), position.getY(), width, height), Color.BLUE);
+        this.player = new Player(position, new Rectangle2D.Double(position.getX(), position.getY(), width, height), Color.BLUE, true);
 
         camera = new Camera(0, 0);
-
-        this.positionPlayer2 = new Rectangle2D.Double(0, 0, width, height);
 
         GameObject.getGameObjects().add(this.player);
         GameObject.getGameObjects().add(new Platform(new Point2D.Double(0, 590), new Rectangle2D.Double(0, 600, 1000, 40)));
@@ -40,15 +50,53 @@ public class GameInterface extends Interface {
         this.random = new Random();
     }
 
-    @Override
-    public void draw(FXGraphics2D graphics) {
-        for (GameObject gameObject : GameObject.getGameObjects()) {
-            gameObject.draw(graphics);
+    public GameInterface(Point2D position, Socket socket) {
+        this.socket = socket;
+        this.isOnline = true;
+
+        try {
+            this.in = new DataInputStream(this.socket.getInputStream());
+            this.out = new DataOutputStream(this.socket.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        graphics.setColor(Color.GREEN);
-        graphics.drawRect((int) (this.positionPlayer2.getX() - camera.getxOffset()), (int) (this.positionPlayer2.getY() - camera.getyOffset()),
-                (int) this.positionPlayer2.getWidth(), (int) this.positionPlayer2.getHeight());
+        int width = 20;
+        int height = 20;
+        this.player = new Player(position, new Rectangle2D.Double(position.getX(), position.getY(), width, height), Color.BLUE, true);
+
+        camera = new Camera(0, 0);
+
+        if (position.getX() == 300) {
+            Point2D player2Pos = new Point2D.Double(250, 200);
+            this.player2 = new Player(player2Pos, new Rectangle2D.Double(player2Pos.getX(), player2Pos.getY(), width, height), Color.ORANGE, false);
+        } else {
+            Point2D player2Pos = new Point2D.Double(300, 200);
+            this.player2 = new Player(player2Pos, new Rectangle2D.Double(player2Pos.getX(), player2Pos.getY(), width, height), Color.ORANGE, false);
+        }
+
+        GameObject.getGameObjects().add(this.player);
+        GameObject.getGameObjects().add(this.player2);
+        GameObject.getGameObjects().add(new Platform(new Point2D.Double(0, 590), new Rectangle2D.Double(0, 600, 1000, 40)));
+
+        this.random = new Random();
+
+        Thread receiveThread = new Thread(() -> {
+            receiveDataFromSocket(this.in);
+        });
+        receiveThread.start();
+    }
+
+    @Override
+    public void draw(FXGraphics2D graphics) {
+        ArrayList<GameObject> gameObjects = GameObject.getGameObjects();
+        for (GameObject gameObject : gameObjects) {
+            if (gameObjects != GameObject.getGameObjects()) {
+                return;
+            }
+
+            gameObject.draw(graphics);
+        }
     }
 
     @Override
@@ -59,7 +107,10 @@ public class GameInterface extends Interface {
             gameObject.update(canvas);
         }
 
-        getPositionPlayer2();
+        if (isOnline) {
+            sendMessageToServer(this.out, "position:" + this.player.positionToString());
+        }
+
         camera.centerOn(this.player);
     }
 
@@ -77,7 +128,7 @@ public class GameInterface extends Interface {
             GameObject.getGameObjects().remove(gameObject);
         }
 
-        if (GameObject.getGameObjects().size() < 10) {
+        if (GameObject.getGameObjects().size() < 12) {
             GameObject latestObject = GameObject.getGameObjects().get(GameObject.getGameObjects().size() - 1);
             int randomX = (int) (latestObject.getPosition().getX() + latestObject.getShape().getWidth() + this.random.nextInt(150) + 5);
             int randomY = (int) (latestObject.getPosition().getY() + this.random.nextInt(175) - (175 / 2));
@@ -86,8 +137,40 @@ public class GameInterface extends Interface {
         }
     }
 
-    private void getPositionPlayer2() {
+    private void setPositionPlayer2(Point2D position) {
+        this.player2.setPosition(position);
+    }
 
+    private void receiveDataFromSocket(DataInputStream in) {
+        String received = "";
+        while (this.isOnline) {
+            try {
+                received = in.readUTF();
+                System.out.println(received);
+                if (received.contains("position:")) {
+                    String positionString = received.substring(9);
+                    String[] positions = positionString.split("\\s");
+
+                    if (positions[0].contains("n") || positions[1].contains("n")) { continue; }
+
+                    double x = Double.parseDouble(positions[0]);
+                    double y = Double.parseDouble(positions[1]);
+                    setPositionPlayer2(new Point2D.Double(x, y));
+                }
+
+            } catch (IOException | NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        Thread.currentThread().interrupt();
+    }
+
+    private void sendMessageToServer(DataOutputStream out, String text) {
+        try {
+            out.writeUTF(text);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static Camera getCamera() {

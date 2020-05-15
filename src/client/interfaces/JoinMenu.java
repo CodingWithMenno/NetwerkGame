@@ -100,6 +100,7 @@ public class JoinMenu extends Interface {
             this.title.setTranslateX(-80);
             this.connected = true;
             Client.getMainPane().getChildren().remove(this.vBox);
+            Interface.setInterface(new Lobby(this.socket, false));
 
         } catch (IOException e) {
             this.title.setText("Failed to join your friend");
