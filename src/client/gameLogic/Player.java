@@ -7,6 +7,7 @@ import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -26,7 +27,7 @@ public class Player extends GameObject {
         this.shape = shape;
         this.color = color;
 
-        this.horizontalSpeed = 5;
+        this.horizontalSpeed = 4;
         this.verticalSpeed = 0;
 
         this.isControlled = isControlled;
@@ -34,8 +35,11 @@ public class Player extends GameObject {
 
 
     public void draw(FXGraphics2D graphics) {
+        AffineTransform at = new AffineTransform();
+        at.translate(-GameInterface.getCamera().getxOffset(),-GameInterface.getCamera().getyOffset());
         graphics.setColor(this.color);
-        graphics.drawRect((int) (this.shape.getX() - GameInterface.getCamera().getxOffset()), (int) (this.shape.getY() - GameInterface.getCamera().getyOffset()), (int) this.shape.getWidth(), (int) this.shape.getHeight());
+        graphics.draw(at.createTransformedShape(this.shape));
+//        graphics.drawRect((int) (this.shape.getX() - GameInterface.getCamera().getxOffset()), (int) (this.shape.getY() - GameInterface.getCamera().getyOffset()), (int) this.shape.getWidth(), (int) this.shape.getHeight());
     }
 
     public void update(ResizableCanvas canvas) {
@@ -63,7 +67,7 @@ public class Player extends GameObject {
                 break;
             case A:
                 if (!collisionToTheRight) {
-                    setHorizontalSpeed(-5);
+                    setHorizontalSpeed(-2);
                 }
                 break;
         }

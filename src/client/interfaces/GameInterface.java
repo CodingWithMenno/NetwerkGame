@@ -146,7 +146,7 @@ public class GameInterface extends Interface {
         while (this.isOnline) {
             try {
                 received = in.readUTF();
-                System.out.println(received);
+//                System.out.println(received);
                 if (received.contains("position:")) {
                     String positionString = received.substring(9);
                     String[] positions = positionString.split("\\s");
@@ -155,6 +155,8 @@ public class GameInterface extends Interface {
 
                     double x = Double.parseDouble(positions[0]);
                     double y = Double.parseDouble(positions[1]);
+                    System.out.println("currentX: " + player2.getPosition().getX() + " currentY: " + player2.getPosition().getY() + " X: " + x + " Y: " + y);
+
                     setPositionPlayer2(new Point2D.Double(x, y));
                 }
 
