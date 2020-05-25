@@ -1,6 +1,7 @@
 package client.interfaces;
 
 import client.Client;
+import javafx.application.Platform;
 import javafx.scene.AccessibleAction;
 import javafx.scene.control.Button;
 import javafx.scene.text.Font;
@@ -26,23 +27,19 @@ public class Lobby extends Interface {
 
     private Button startButton;
 
+    private GameInterface gi = null;
+
     public Lobby(Socket socket, boolean isPlayer1) {
         this.startButton = new Button("Start");
         this.startButton.setFont(Font.font("Helvetica", FontWeight.BOLD, 20));
         this.startButton.setPrefSize(200, 50);
         this.startButton.setOnAction(event -> {
-            if (this.isPlayer1) { sendMessageToServer(this.out, "START1"); }
-            else sendMessageToServer(this.out, "START2");
-
-            if (this.startGame) {
-                if (this.isPlayer1) {
-                    Client.getMainPane().getChildren().remove(this.startButton);
-                    Interface.setInterface(new GameInterface(new Point2D.Double(300, 200), this.socket));
-                } else {
-                    Client.getMainPane().getChildren().remove(this.startButton);
-                    Interface.setInterface(new GameInterface(new Point2D.Double(250, 200), this.socket));
-                }
-                this.isConnected = false;
+            if (this.isPlayer1) {
+                sendMessageToServer(this.out, "START1");
+                System.out.println("Sended start1");
+            } else {
+                sendMessageToServer(this.out, "START2");
+                System.out.println("Sended start2");
             }
         });
 
@@ -62,7 +59,8 @@ public class Lobby extends Interface {
 
         Thread receiveThread = new Thread(() -> {
             receiveDataFromSocket(this.in);
-        }); receiveThread.start();
+        });
+        receiveThread.start();
     }
 
     @Override
@@ -71,7 +69,22 @@ public class Lobby extends Interface {
 
     @Override
     public void update(ResizableCanvas canvas) {
+        if (this.startGame) {
+            System.out.println("Javafx game started");
+            Platform.runLater(() -> {
+                if (this.isPlayer1 && this.gi == null) {
+                    this.gi = new GameInterface(new Point2D.Double(300, 200), this.socket);
+                    Client.getMainPane().getChildren().remove(this.startButton);
+                    Interface.setInterface(this.gi);
+                } else if (this.gi == null) {
+                    this.gi = new GameInterface(new Point2D.Double(250, 200), this.socket);
+                    Client.getMainPane().getChildren().remove(this.startButton);
+                    Interface.setInterface(this.gi);
+                }
+                this.isConnected = false;
 
+            });
+        }
     }
 
     private void receiveDataFromSocket(DataInputStream in) {
@@ -80,6 +93,7 @@ public class Lobby extends Interface {
             try {
                 received = in.readUTF();
                 if (received.equals("start game")) {
+                    System.out.println("startGame set to true");
                     this.startGame = true;
                 }
             } catch (IOException e) {

@@ -51,6 +51,7 @@ public class GameInterface extends Interface {
     }
 
     public GameInterface(Point2D position, Socket socket) {
+        System.out.println("Game has started");
         this.socket = socket;
         this.isOnline = true;
 
@@ -89,6 +90,9 @@ public class GameInterface extends Interface {
 
     @Override
     public void draw(FXGraphics2D graphics) {
+        System.out.println(Interface.getCurrentInterface());
+        System.out.println("IS drawing game");
+
         ArrayList<GameObject> gameObjects = GameObject.getGameObjects();
         for (GameObject gameObject : gameObjects) {
             if (gameObjects != GameObject.getGameObjects()) {
@@ -101,6 +105,7 @@ public class GameInterface extends Interface {
 
     @Override
     public void update(ResizableCanvas canvas) {
+//        System.out.println("IS updating game");
         generateWorld();
 
         for (GameObject gameObject : GameObject.getGameObjects()) {

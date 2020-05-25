@@ -50,7 +50,7 @@ public class JoinMenu extends Interface {
 
         this.hostNumberBox = new HBox();
         this.hostNumberBox.setSpacing(10);
-        this.hostNumberBox.setTranslateX(-(175/2));
+        this.hostNumberBox.setTranslateX(-(175 / 2));
 
         this.hostNumberLabel = new Label("Host number");
         this.hostNumberLabel.setPrefSize(175, 50);
@@ -99,6 +99,7 @@ public class JoinMenu extends Interface {
             this.title.setText("Connected to your friend");
             this.title.setTranslateX(-80);
             this.connected = true;
+
             Client.getMainPane().getChildren().remove(this.vBox);
             Interface.setInterface(new Lobby(this.socket, false));
 
@@ -116,13 +117,6 @@ public class JoinMenu extends Interface {
 
     @Override
     public void update(ResizableCanvas canvas) {
-        if (this.connected) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            Interface.setInterface(new Lobby(this.socket, false));
-        }
+
     }
 }

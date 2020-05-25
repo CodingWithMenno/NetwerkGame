@@ -3,6 +3,7 @@ package client;
 import client.interfaces.Interface;
 import client.interfaces.MainMenu;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
@@ -30,6 +31,7 @@ public class Client extends Application {
 
     public static KeyCode keyCode;
 
+    public Thread fxThread;
 
     public static void main(String[] args) {
         launch(Client.class);
@@ -60,7 +62,7 @@ public class Client extends Application {
 
         ScheduledExecutorService drawThread = Executors
                 .newSingleThreadScheduledExecutor();
-        updateThread.scheduleAtFixedRate(new Runnable() {
+        drawThread.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 draw(g2d);
@@ -82,6 +84,7 @@ public class Client extends Application {
             drawThread.shutdown();
             updateThread.shutdown();
         });
+
         stage.show();
     }
 
@@ -104,6 +107,9 @@ public class Client extends Application {
 
         if (Interface.getCurrentInterface() != null) {
             Interface.getCurrentInterface().draw(graphics);
+        }
+        else{
+            System.out.println("NO INTERFACE DETECTED");
         }
     }
 

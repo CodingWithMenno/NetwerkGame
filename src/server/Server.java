@@ -74,7 +74,7 @@ public class Server {
 
             sendToAllClients("connected");
 
-            while (!this.player1Ready || !this.player2Ready) {
+            while (!isPlayer1Ready() || !isPlayer2Ready()) {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -84,6 +84,7 @@ public class Server {
             }
 
             sendToAllClients("start game");
+            System.out.println("Sended start game");
 
         } catch (IOException e) {
             System.out.println("Server closed");
@@ -124,13 +125,21 @@ public class Server {
         return status;
     }
 
-    public void setPlayer1Ready(boolean player1Ready) {
+    public synchronized void setPlayer1Ready(boolean player1Ready) {
         System.out.println("player 1 ready");
         this.player1Ready = player1Ready;
     }
 
-    public void setPlayer2Ready(boolean player2Ready) {
+    public synchronized void setPlayer2Ready(boolean player2Ready) {
         System.out.println("player 2 ready");
         this.player2Ready = player2Ready;
+    }
+
+    public synchronized boolean isPlayer1Ready() {
+        return player1Ready;
+    }
+
+    public synchronized boolean isPlayer2Ready() {
+        return player2Ready;
     }
 }
