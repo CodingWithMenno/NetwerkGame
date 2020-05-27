@@ -6,18 +6,19 @@ import org.jfree.fx.ResizableCanvas;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-public class GameObject {
+public class GameObject implements Serializable {
 
-    private Point2D position;
-    private Rectangle2D shape;
+    private Point2D.Double position;
+    private Rectangle2D.Double shape;
     private static ArrayList<GameObject> gameObjects = new ArrayList<>(); // All the game objects
 
-    public GameObject(Point2D position, Rectangle2D shape) {
+    public GameObject(Point2D.Double position, Rectangle2D.Double shape) {
         this.position = position;
         this.shape = shape;
     }
@@ -26,7 +27,7 @@ public class GameObject {
         return this.position;
     }
 
-    public void setPosition(Point2D position) {
+    public void setPosition(Point2D.Double position) {
         this.position = position;
     }
 

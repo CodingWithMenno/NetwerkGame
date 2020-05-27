@@ -10,7 +10,7 @@ import java.awt.geom.Rectangle2D;
 public class Platform extends GameObject {
 
 
-    public Platform(Point2D position, Rectangle2D shape) {
+    public Platform(Point2D.Double position, Rectangle2D.Double shape) {
         super(position, shape);
     }
 

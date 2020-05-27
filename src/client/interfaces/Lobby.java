@@ -84,7 +84,6 @@ public class Lobby extends Interface {
                     Interface.setInterface(this.gi);
                 }
                 this.isConnected = false;
-
             });
         }
     }

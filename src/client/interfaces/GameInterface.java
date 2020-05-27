@@ -37,7 +37,7 @@ public class GameInterface extends Interface {
     public GameInterface() {
         this.isOnline = false;
 
-        Point2D position = new Point2D.Double(300, 200);
+        Point2D.Double position = new Point2D.Double(300, 200);
         int width = 20;
         int height = 20;
         this.player = new Player(position, new Rectangle2D.Double(position.getX(), position.getY(), width, height), Color.BLUE, true);
@@ -50,7 +50,7 @@ public class GameInterface extends Interface {
         this.random = new Random();
     }
 
-    public GameInterface(Point2D position, Socket socket, ObjectInputStream objIn, ObjectOutputStream objOut) {
+    public GameInterface(Point2D.Double position, Socket socket, ObjectInputStream objIn, ObjectOutputStream objOut) {
         System.out.println("Game has started");
         this.socket = socket;
         this.isOnline = true;
@@ -60,6 +60,8 @@ public class GameInterface extends Interface {
             this.objIn = objIn;
             this.out = new DataOutputStream(this.socket.getOutputStream());
             this.objOut = objOut;
+            this.objIn.reset();
+            this.objOut.reset();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,10 +73,10 @@ public class GameInterface extends Interface {
         camera = new Camera(0, 0);
 
         if (position.getX() == 300) {
-            Point2D player2Pos = new Point2D.Double(250, 200);
+            Point2D.Double player2Pos = new Point2D.Double(250, 200);
             this.player2 = new Player(player2Pos, new Rectangle2D.Double(player2Pos.getX(), player2Pos.getY(), width, height), Color.ORANGE, false);
         } else {
-            Point2D player2Pos = new Point2D.Double(300, 200);
+            Point2D.Double player2Pos = new Point2D.Double(300, 200);
             this.player2 = new Player(player2Pos, new Rectangle2D.Double(player2Pos.getX(), player2Pos.getY(), width, height), Color.ORANGE, false);
         }
 
@@ -135,8 +137,8 @@ public class GameInterface extends Interface {
         }
     }
 
-    private void setPositionPlayer2(Player player2) {
-        this.player2 = player2;
+    private void setPositionPlayer2(Point2D.Double player2) {
+        this.player2.setPosition(player2);
     }
 
     private void receiveDataFromSocket(ObjectInputStream in) {
@@ -166,7 +168,7 @@ public class GameInterface extends Interface {
 
         while (this.isOnline) {
             try {
-                Player player2 = (Player) in.readObject();
+                Point2D.Double player2 = (Point2D.Double) in.readObject();
                 System.out.println(player2);
                 setPositionPlayer2(player2);
             } catch (IOException e) {
@@ -180,7 +182,7 @@ public class GameInterface extends Interface {
 
     private void sendPlayerInfo(ObjectOutputStream out, Player player) {
         try {
-            out.writeObject(player);
+            out.writeObject(player.getPosition());
         } catch (IOException e) {
             e.printStackTrace();
         }

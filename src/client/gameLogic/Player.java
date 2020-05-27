@@ -11,10 +11,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 
-public class Player extends GameObject {
+public class Player extends GameObject implements Serializable {
 
-    private Rectangle2D shape;
+    private Rectangle2D.Double shape;
     private Color color;
 
     private int horizontalSpeed;
@@ -22,7 +23,7 @@ public class Player extends GameObject {
 
     private boolean isControlled;
 
-    public Player(Point2D position, Rectangle2D shape, Color color, boolean isControlled) {
+    public Player(Point2D.Double position, Rectangle2D.Double shape, Color color, boolean isControlled) {
         super(position, shape);
         this.shape = shape;
         this.color = color;

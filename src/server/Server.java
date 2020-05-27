@@ -103,13 +103,13 @@ public class Server {
         }
     }
 
-    public void writePlayerToOtherSocket(Socket socket, Object o) {
+    public void writePlayerToOtherSocket(ObjectOutputStream objOut, Object o) {
         try {
-            ObjectOutputStream out = null;
-            if (socket.equals(this.serverClients.get(0).getSocket())) {
-                out = new ObjectOutputStream(this.serverClients.get(1).getSocket().getOutputStream());
+            ObjectOutputStream out;
+            if (objOut.equals(this.serverClients.get(0).getObjOut())) {
+                out = this.serverClients.get(1).getObjOut();
             } else {
-                out = new ObjectOutputStream(this.serverClients.get(0).getSocket().getOutputStream());
+                out = this.serverClients.get(0).getObjOut();
             }
 
             out.writeObject(o);

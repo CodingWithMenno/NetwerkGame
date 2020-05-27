@@ -72,7 +72,7 @@ public class ServerClient implements Runnable {
         while (this.isConnected) {
             try {
                 Object o = this.objIn.readObject();
-                this.server.writePlayerToOtherSocket(this.socket, o);
+                this.server.writePlayerToOtherSocket(this.objOut, o);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -85,8 +85,12 @@ public class ServerClient implements Runnable {
         return name;
     }
 
-    public DataOutputStream getOut() {
-        return out;
+    public ObjectOutputStream getObjOut() {
+        return objOut;
+    }
+
+    public ObjectInputStream getObjIn() {
+        return objIn;
     }
 
     public Socket getSocket() {
