@@ -108,7 +108,7 @@ public class GameInterface extends Interface {
         }
 
         if (isOnline) {
-            sendPlayerInfo(this.objOut, this.player);
+            //sendPlayerInfo(this.objOut, this.player);
         }
 
         camera.centerOn(this.player);
