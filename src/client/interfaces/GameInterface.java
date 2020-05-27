@@ -10,9 +10,7 @@ import org.jfree.fx.ResizableCanvas;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Random;
@@ -25,6 +23,8 @@ public class GameInterface extends Interface {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+    private ObjectInputStream objIn;
+    private ObjectOutputStream objOut;
 
     private Player player2;
     private boolean isOnline;
@@ -57,7 +57,9 @@ public class GameInterface extends Interface {
 
         try {
             this.in = new DataInputStream(this.socket.getInputStream());
+            this.objIn = new ObjectInputStream(this.socket.getInputStream());
             this.out = new DataOutputStream(this.socket.getOutputStream());
+            this.objOut = new ObjectOutputStream(this.socket.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -90,22 +92,13 @@ public class GameInterface extends Interface {
 
     @Override
     public void draw(FXGraphics2D graphics) {
-        System.out.println(Interface.getCurrentInterface());
-        System.out.println("IS drawing game");
-
-        ArrayList<GameObject> gameObjects = GameObject.getGameObjects();
-        for (GameObject gameObject : gameObjects) {
-            if (gameObjects != GameObject.getGameObjects()) {
-                return;
-            }
-
+        for (GameObject gameObject : GameObject.getGameObjects()) {
             gameObject.draw(graphics);
         }
     }
 
     @Override
     public void update(ResizableCanvas canvas) {
-//        System.out.println("IS updating game");
         generateWorld();
 
         for (GameObject gameObject : GameObject.getGameObjects()) {
@@ -151,7 +144,7 @@ public class GameInterface extends Interface {
         while (this.isOnline) {
             try {
                 received = in.readUTF();
-//                System.out.println(received);
+                System.out.println("received: " + received);
                 if (received.contains("position:")) {
                     String positionString = received.substring(9);
                     String[] positions = positionString.split("\\s");
@@ -160,7 +153,7 @@ public class GameInterface extends Interface {
 
                     double x = Double.parseDouble(positions[0]);
                     double y = Double.parseDouble(positions[1]);
-                    System.out.println("currentX: " + player2.getPosition().getX() + " currentY: " + player2.getPosition().getY() + " X: " + x + " Y: " + y);
+                    //System.out.println("currentX: " + player2.getPosition().getX() + " currentY: " + player2.getPosition().getY() + " X: " + x + " Y: " + y);
 
                     setPositionPlayer2(new Point2D.Double(x, y));
                 }

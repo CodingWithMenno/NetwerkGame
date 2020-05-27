@@ -45,29 +45,16 @@ public class Client extends Application {
         stage = primaryStage;
         FXGraphics2D g2d = new FXGraphics2D(canvas.getGraphicsContext2D());
 
-        last = -1;
-
         ScheduledExecutorService updateThread = Executors
                 .newSingleThreadScheduledExecutor();
         updateThread.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                long now = System.currentTimeMillis();
-                if (last == -1)
-                    last = now;
                 update();
-                last = now;
-            }
-        }, 0, 1000 / 60, TimeUnit.MILLISECONDS);
-
-        ScheduledExecutorService drawThread = Executors
-                .newSingleThreadScheduledExecutor();
-        drawThread.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
                 draw(g2d);
             }
         }, 0, 1000 / 60, TimeUnit.MILLISECONDS);
+
 
         Scene scene = new Scene(mainPane);
         scene.setOnKeyPressed(keyEvent -> keyCode = keyEvent.getCode());
@@ -81,7 +68,6 @@ public class Client extends Application {
         stage.setResizable(false);
         stage.centerOnScreen();
         stage.setOnCloseRequest(event -> {
-            drawThread.shutdown();
             updateThread.shutdown();
         });
 

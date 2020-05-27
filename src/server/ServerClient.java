@@ -51,7 +51,8 @@ public class ServerClient implements Runnable {
                 }
 
                 if (received.contains("position")) {
-                    this.server.writeStringToOtherSocket(this.socket, received);
+                    System.out.println("position received");
+                    this.server.writeStringToOtherSocket(this.socket, received + this.name);
                 }
 
             } catch (IOException e) {
@@ -66,5 +67,9 @@ public class ServerClient implements Runnable {
 
     public DataOutputStream getOut() {
         return out;
+    }
+
+    public Socket getSocket() {
+        return socket;
     }
 }

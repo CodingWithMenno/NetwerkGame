@@ -96,12 +96,14 @@ public class JoinMenu extends Interface {
         try {
             this.socket = new Socket(this.hostName, this.port);
 
-            this.title.setText("Connected to your friend");
-            this.title.setTranslateX(-80);
-            this.connected = true;
+            if (this.socket != null) {
+                this.title.setText("Connected to your friend");
+                this.title.setTranslateX(-80);
+                this.connected = true;
 
-            Client.getMainPane().getChildren().remove(this.vBox);
-            Interface.setInterface(new Lobby(this.socket, false));
+                Client.getMainPane().getChildren().remove(this.vBox);
+                Interface.setInterface(new Lobby(this.socket, false));
+            }
 
         } catch (IOException e) {
             this.title.setText("Failed to join your friend");

@@ -1,6 +1,7 @@
 package server;
 
 import client.Client;
+import client.gameLogic.Player;
 
 import java.awt.geom.Point2D;
 import java.io.DataInputStream;
@@ -20,15 +21,15 @@ public class Server {
 
     private ArrayList<ServerClient> serverClients = new ArrayList<>();
     private HashMap<String, Thread> clientThreads = new HashMap<>();
-    private ArrayList<Socket> sockets = new ArrayList<>();
+    //private ArrayList<Socket> sockets = new ArrayList<>();
 
     private boolean player1Ready = false;
     private boolean player2Ready = false;
 
     private int status; // 0 = not ready to accept clients, 1 = ready to accept clients, 2 = all possible clients accepted
 
-    private Point2D player1;
-    private Point2D player2;
+    private Player player1;
+    private Player player2;
 
 
     public Server(int port) {
@@ -53,7 +54,7 @@ public class Server {
                 if (this.serverClients.size() == 0) {
                     ServerClient serverClient = new ServerClient(socket, "Player 1", this);
                     this.serverClients.add(serverClient);
-                    this.sockets.add(socket);
+                    //this.sockets.add(socket);
                     Thread t = new Thread(serverClient);
                     t.start();
                     this.clientThreads.put("Player 1", t);
@@ -61,7 +62,7 @@ public class Server {
                 } else {
                     ServerClient serverClient = new ServerClient(socket, "Player 2", this);
                     this.serverClients.add(serverClient);
-                    this.sockets.add(socket);
+                    //this.sockets.add(socket);
                     Thread t = new Thread(serverClient);
                     t.start();
                     this.clientThreads.put("Player 2", t);
@@ -105,10 +106,10 @@ public class Server {
     public void writeStringToOtherSocket(Socket socket, String text) {
         try {
             DataOutputStream out = null;
-            if (socket.equals(this.sockets.get(0))) {
-                out = new DataOutputStream(this.sockets.get(1).getOutputStream());
+            if (socket.equals(this.serverClients.get(0).getSocket())) {
+                out = new DataOutputStream(this.serverClients.get(1).getSocket().getOutputStream());
             } else {
-                out = new DataOutputStream(this.sockets.get(0).getOutputStream());
+                out = new DataOutputStream(this.serverClients.get(0).getSocket().getOutputStream());
             }
 
             out.writeUTF(text);
