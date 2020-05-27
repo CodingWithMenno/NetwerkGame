@@ -1,8 +1,8 @@
 package server;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import client.gameLogic.Player;
+
+import java.io.*;
 import java.net.Socket;
 
 public class ServerClient implements Runnable {
@@ -10,6 +10,8 @@ public class ServerClient implements Runnable {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+    private ObjectInputStream objIn;
+    private ObjectOutputStream objOut;
     private String name;
     private Server server;
     private boolean isConnected = true;
@@ -21,7 +23,9 @@ public class ServerClient implements Runnable {
 
         try {
             this.in = new DataInputStream(socket.getInputStream());
+            this.objIn = new ObjectInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
+            this.objOut = new ObjectOutputStream(socket.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -38,7 +42,10 @@ public class ServerClient implements Runnable {
 
     @Override
     public void run() {
-        while (isConnected) {
+        Thread playerInfoThread = new Thread(this::receivePlayer);
+        playerInfoThread.start();
+
+        while (this.isConnected) {
             try {
                 String received = this.in.readUTF();
 
@@ -50,12 +57,25 @@ public class ServerClient implements Runnable {
                     this.server.setPlayer2Ready(true);
                 }
 
-                if (received.contains("position")) {
-                    System.out.println("position received");
-                    this.server.writeStringToOtherSocket(this.socket, received + this.name);
-                }
+//                if (received.contains("position")) {
+//                    System.out.println("position received");
+//                    this.server.writeStringToOtherSocket(this.socket, received + this.name);
+//                }
 
             } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void receivePlayer() {
+        while (this.isConnected) {
+            try {
+                Player player = (Player) this.objIn.readObject();
+                this.server.writePlayerToOtherSocket(this.socket, player);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }

@@ -85,7 +85,7 @@ public class GameInterface extends Interface {
         this.random = new Random();
 
         Thread receiveThread = new Thread(() -> {
-            receiveDataFromSocket(this.in);
+            receiveDataFromSocket(this.objIn);
         });
         receiveThread.start();
     }
@@ -106,7 +106,7 @@ public class GameInterface extends Interface {
         }
 
         if (isOnline) {
-            sendMessageToServer(this.out, "position:" + this.player.positionToString());
+            sendPlayerInfo(this.objOut, this.player);
         }
 
         camera.centerOn(this.player);
@@ -135,39 +135,52 @@ public class GameInterface extends Interface {
         }
     }
 
-    private void setPositionPlayer2(Point2D position) {
-        this.player2.setPosition(position);
+    private void setPositionPlayer2(Player player2) {
+        this.player2 = player2;
     }
 
-    private void receiveDataFromSocket(DataInputStream in) {
-        String received = "";
+    private void receiveDataFromSocket(ObjectInputStream in) {
+//        String received = "";
+//        while (this.isOnline) {
+//            try {
+//                received = in.readUTF();
+//                System.out.println("received: " + received);
+//                if (received.contains("position:")) {
+//                    String positionString = received.substring(9);
+//                    String[] positions = positionString.split("\\s");
+//
+//                    if (positions[0].contains("n") || positions[1].contains("n")) { continue; }
+//
+//                    double x = Double.parseDouble(positions[0]);
+//                    double y = Double.parseDouble(positions[1]);
+//                    //System.out.println("currentX: " + player2.getPosition().getX() + " currentY: " + player2.getPosition().getY() + " X: " + x + " Y: " + y);
+//
+//                    setPositionPlayer2(new Point2D.Double(x, y));
+//                }
+//
+//            } catch (IOException | NumberFormatException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        Thread.currentThread().interrupt();
+
         while (this.isOnline) {
             try {
-                received = in.readUTF();
-                System.out.println("received: " + received);
-                if (received.contains("position:")) {
-                    String positionString = received.substring(9);
-                    String[] positions = positionString.split("\\s");
-
-                    if (positions[0].contains("n") || positions[1].contains("n")) { continue; }
-
-                    double x = Double.parseDouble(positions[0]);
-                    double y = Double.parseDouble(positions[1]);
-                    //System.out.println("currentX: " + player2.getPosition().getX() + " currentY: " + player2.getPosition().getY() + " X: " + x + " Y: " + y);
-
-                    setPositionPlayer2(new Point2D.Double(x, y));
-                }
-
-            } catch (IOException | NumberFormatException e) {
+                Player player2 = (Player) in.readObject();
+                System.out.println(player2);
+                setPositionPlayer2(player2);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
         Thread.currentThread().interrupt();
     }
 
-    private void sendMessageToServer(DataOutputStream out, String text) {
+    private void sendPlayerInfo(ObjectOutputStream out, Player player) {
         try {
-            out.writeUTF(text);
+            out.writeObject(player);
         } catch (IOException e) {
             e.printStackTrace();
         }

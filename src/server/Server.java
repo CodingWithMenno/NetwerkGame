@@ -7,6 +7,7 @@ import java.awt.geom.Point2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -103,16 +104,16 @@ public class Server {
         }
     }
 
-    public void writeStringToOtherSocket(Socket socket, String text) {
+    public void writePlayerToOtherSocket(Socket socket, Player player) {
         try {
-            DataOutputStream out = null;
+            ObjectOutputStream out = null;
             if (socket.equals(this.serverClients.get(0).getSocket())) {
-                out = new DataOutputStream(this.serverClients.get(1).getSocket().getOutputStream());
+                out = new ObjectOutputStream(this.serverClients.get(1).getSocket().getOutputStream());
             } else {
-                out = new DataOutputStream(this.serverClients.get(0).getSocket().getOutputStream());
+                out = new ObjectOutputStream(this.serverClients.get(0).getSocket().getOutputStream());
             }
 
-            out.writeUTF(text);
+            out.writeObject(player);
         } catch (IOException e) {
             e.printStackTrace();
         }
