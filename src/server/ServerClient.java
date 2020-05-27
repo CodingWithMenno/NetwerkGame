@@ -23,9 +23,9 @@ public class ServerClient implements Runnable {
 
         try {
             this.in = new DataInputStream(socket.getInputStream());
-            this.objIn = new ObjectInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
             this.objOut = new ObjectOutputStream(socket.getOutputStream());
+            this.objIn = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,8 +71,8 @@ public class ServerClient implements Runnable {
     private void receivePlayer() {
         while (this.isConnected) {
             try {
-                Player player = (Player) this.objIn.readObject();
-                this.server.writePlayerToOtherSocket(this.socket, player);
+                Object o = this.objIn.readObject();
+                this.server.writePlayerToOtherSocket(this.socket, o);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {

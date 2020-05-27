@@ -50,16 +50,16 @@ public class GameInterface extends Interface {
         this.random = new Random();
     }
 
-    public GameInterface(Point2D position, Socket socket) {
+    public GameInterface(Point2D position, Socket socket, ObjectInputStream objIn, ObjectOutputStream objOut) {
         System.out.println("Game has started");
         this.socket = socket;
         this.isOnline = true;
 
         try {
             this.in = new DataInputStream(this.socket.getInputStream());
-            this.objIn = new ObjectInputStream(this.socket.getInputStream());
+            this.objIn = objIn;
             this.out = new DataOutputStream(this.socket.getOutputStream());
-            this.objOut = new ObjectOutputStream(this.socket.getOutputStream());
+            this.objOut = objOut;
         } catch (IOException e) {
             e.printStackTrace();
         }

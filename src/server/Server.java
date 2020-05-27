@@ -59,7 +59,6 @@ public class Server {
                     Thread t = new Thread(serverClient);
                     t.start();
                     this.clientThreads.put("Player 1", t);
-
                 } else {
                     ServerClient serverClient = new ServerClient(socket, "Player 2", this);
                     this.serverClients.add(serverClient);
@@ -96,7 +95,7 @@ public class Server {
     public void sendToAllClients(String text) {
         for (ServerClient client : this.serverClients) {
             try {
-                DataOutputStream out = new DataOutputStream(client.getOut());
+                DataOutputStream out = new DataOutputStream(client.getSocket().getOutputStream());
                 out.writeUTF(text);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -104,7 +103,7 @@ public class Server {
         }
     }
 
-    public void writePlayerToOtherSocket(Socket socket, Player player) {
+    public void writePlayerToOtherSocket(Socket socket, Object o) {
         try {
             ObjectOutputStream out = null;
             if (socket.equals(this.serverClients.get(0).getSocket())) {
@@ -113,7 +112,7 @@ public class Server {
                 out = new ObjectOutputStream(this.serverClients.get(0).getSocket().getOutputStream());
             }
 
-            out.writeObject(player);
+            out.writeObject(o);
         } catch (IOException e) {
             e.printStackTrace();
         }

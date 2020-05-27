@@ -24,6 +24,8 @@ public class HostMenu extends Interface {
     private Socket socket;
     private DataInputStream dataIn;
     private DataOutputStream dataOut;
+    private ObjectOutputStream objOut;
+    private ObjectInputStream objIn;
 
     private Thread readSocketThread;
 
@@ -111,7 +113,7 @@ public class HostMenu extends Interface {
             Platform.runLater(() ->
             {
                 Client.getMainPane().getChildren().remove(this.vBox);
-                Interface.setInterface(new Lobby(this.socket, true));
+                Interface.setInterface(new Lobby(this.socket, true, this.objIn, this.objOut));
             });
         }
     }
@@ -139,6 +141,8 @@ public class HostMenu extends Interface {
 
             this.dataIn = new DataInputStream(socket.getInputStream());
             this.dataOut = new DataOutputStream(socket.getOutputStream());
+            this.objOut = new ObjectOutputStream(socket.getOutputStream());
+            this.objIn = new ObjectInputStream(socket.getInputStream());
 
             this.readSocketThread = new Thread(() -> {
                 receiveDataFromSocket(this.dataIn);

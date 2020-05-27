@@ -13,9 +13,7 @@ import javafx.scene.text.FontWeight;
 import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 
@@ -95,15 +93,17 @@ public class JoinMenu extends Interface {
 
         try {
             this.socket = new Socket(this.hostName, this.port);
-
+            ObjectOutputStream out = new ObjectOutputStream(this.socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(this.socket.getInputStream());
             if (this.socket != null) {
                 this.title.setText("Connected to your friend");
                 this.title.setTranslateX(-80);
                 this.connected = true;
 
                 Client.getMainPane().getChildren().remove(this.vBox);
-                Interface.setInterface(new Lobby(this.socket, false));
+                Interface.setInterface(new Lobby(this.socket, false, in, out));
             }
+
 
         } catch (IOException e) {
             this.title.setText("Failed to join your friend");

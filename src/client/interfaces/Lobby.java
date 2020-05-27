@@ -10,9 +10,7 @@ import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
 
 import java.awt.geom.Point2D;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 public class Lobby extends Interface {
@@ -20,6 +18,8 @@ public class Lobby extends Interface {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+    private ObjectInputStream objIn;
+    private ObjectOutputStream objOut;
 
     private boolean isPlayer1;
     private boolean isConnected;
@@ -29,7 +29,7 @@ public class Lobby extends Interface {
 
     private GameInterface gi = null;
 
-    public Lobby(Socket socket, boolean isPlayer1) {
+    public Lobby(Socket socket, boolean isPlayer1, ObjectInputStream objIn, ObjectOutputStream objOut) {
         this.startButton = new Button("Start");
         this.startButton.setFont(Font.font("Helvetica", FontWeight.BOLD, 20));
         this.startButton.setPrefSize(200, 50);
@@ -45,6 +45,8 @@ public class Lobby extends Interface {
 
         Client.getMainPane().getChildren().add(this.startButton);
 
+        this.objIn = objIn;
+        this.objOut = objOut;
         this.socket = socket;
         this.isPlayer1 = isPlayer1;
         this.isConnected = true;
@@ -73,11 +75,11 @@ public class Lobby extends Interface {
             System.out.println("Javafx game started");
             Platform.runLater(() -> {
                 if (this.isPlayer1 && this.gi == null) {
-                    this.gi = new GameInterface(new Point2D.Double(300, 200), this.socket);
+                    this.gi = new GameInterface(new Point2D.Double(300, 200), this.socket, this.objIn, this.objOut);
                     Client.getMainPane().getChildren().remove(this.startButton);
                     Interface.setInterface(this.gi);
                 } else if (this.gi == null) {
-                    this.gi = new GameInterface(new Point2D.Double(250, 200), this.socket);
+                    this.gi = new GameInterface(new Point2D.Double(250, 200), this.socket, this.objIn, this.objOut);
                     Client.getMainPane().getChildren().remove(this.startButton);
                     Interface.setInterface(this.gi);
                 }
