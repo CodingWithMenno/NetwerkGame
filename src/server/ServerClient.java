@@ -1,7 +1,5 @@
 package server;
 
-import client.gameLogic.Player;
-
 import java.io.*;
 import java.net.Socket;
 
@@ -42,9 +40,7 @@ public class ServerClient implements Runnable {
 
     @Override
     public void run() {
-        Thread playerInfoThread = new Thread(this::receivePlayer);
-        playerInfoThread.start();
-
+        boolean started = false;
         while (this.isConnected) {
             try {
                 String received = this.in.readUTF();
@@ -53,14 +49,16 @@ public class ServerClient implements Runnable {
 
                 if (received.contains("START1")) {
                     this.server.setPlayer1Ready(true);
+                    started = true;
                 } else if (received.contains("START2")) {
                     this.server.setPlayer2Ready(true);
+                    started = true;
                 }
 
-//                if (received.contains("position")) {
-//                    System.out.println("position received");
-//                    this.server.writeStringToOtherSocket(this.socket, received + this.name);
-//                }
+                if (started) {
+                    receivePlayer();
+                    return;
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -69,7 +67,9 @@ public class ServerClient implements Runnable {
     }
 
     private void receivePlayer() {
-        while (this.isConnected) {
+        boolean connected = true;
+
+        while (connected) {
             try {
                 Object o = this.objIn.readObject();
                 this.server.writePlayerToOtherSocket(this.objOut, o);

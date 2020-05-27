@@ -23,7 +23,7 @@ public class GameObject implements Serializable {
         this.shape = shape;
     }
 
-    public Point2D getPosition() {
+    public Point2D.Double getPosition() {
         return this.position;
     }
 

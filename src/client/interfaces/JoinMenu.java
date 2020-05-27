@@ -2,7 +2,6 @@ package client.interfaces;
 
 import client.Client;
 import client.ResourceLoader;
-import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -15,7 +14,6 @@ import org.jfree.fx.ResizableCanvas;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.SocketException;
 
 public class JoinMenu extends Interface {
 
