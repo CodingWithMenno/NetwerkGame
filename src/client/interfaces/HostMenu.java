@@ -22,8 +22,8 @@ public class HostMenu extends Interface {
     private String hostname;
     private int port = 500;
     private Socket socket;
-    private DataInputStream dataIn;
-    private DataOutputStream dataOut;
+//    private DataInputStream dataIn;
+//    private DataOutputStream dataOut;
     private ObjectOutputStream objOut;
     private ObjectInputStream objIn;
 
@@ -139,13 +139,13 @@ public class HostMenu extends Interface {
         try {
             this.socket = new Socket(this.hostname, this.port);
 
-            this.dataIn = new DataInputStream(socket.getInputStream());
-            this.dataOut = new DataOutputStream(socket.getOutputStream());
+//            this.dataIn = new DataInputStream(socket.getInputStream());
+//            this.dataOut = new DataOutputStream(socket.getOutputStream());
             this.objOut = new ObjectOutputStream(socket.getOutputStream());
             this.objIn = new ObjectInputStream(socket.getInputStream());
 
             this.readSocketThread = new Thread(() -> {
-                receiveDataFromSocket(this.dataIn);
+                receiveDataFromSocket(this.objIn);
             });
             this.readSocketThread.start();
 
@@ -156,7 +156,7 @@ public class HostMenu extends Interface {
     }
 
 
-    private void receiveDataFromSocket(DataInputStream in) {
+    private void receiveDataFromSocket(ObjectInputStream in) {
         String received = "";
         try {
             received = in.readUTF();

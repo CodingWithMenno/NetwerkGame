@@ -95,7 +95,7 @@ public class Server {
     public void sendToAllClients(String text) {
         for (ServerClient client : this.serverClients) {
             try {
-                DataOutputStream out = new DataOutputStream(client.getSocket().getOutputStream());
+                ObjectOutputStream out = client.getObjOut();
                 out.writeUTF(text);
             } catch (IOException e) {
                 e.printStackTrace();

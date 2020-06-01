@@ -161,15 +161,15 @@ public class GameInterface extends Interface {
 //        Thread.currentThread().interrupt();
 
         while (this.isOnline) {
-//            try {
-//                Point2D.Double player2 = (Point2D.Double) in.readObject();
-//                System.out.println(player2);
-//                setPositionPlayer2(player2);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            } catch (ClassNotFoundException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                Point2D.Double player2 = (Point2D.Double) in.readObject();
+                System.out.println(player2);
+                setPositionPlayer2(player2);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
         Thread.currentThread().interrupt();
     }

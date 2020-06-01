@@ -6,8 +6,8 @@ import java.net.Socket;
 public class ServerClient implements Runnable {
 
     private Socket socket;
-    private DataInputStream in;
-    private DataOutputStream out;
+//    private DataInputStream in;
+//    private DataOutputStream out;
     private ObjectInputStream objIn;
     private ObjectOutputStream objOut;
     private String name;
@@ -20,19 +20,10 @@ public class ServerClient implements Runnable {
         this.server = server;
 
         try {
-            this.in = new DataInputStream(socket.getInputStream());
-            this.out = new DataOutputStream(socket.getOutputStream());
+//            this.in = new DataInputStream(socket.getInputStream());
+//            this.out = new DataOutputStream(socket.getOutputStream());
             this.objOut = new ObjectOutputStream(socket.getOutputStream());
             this.objIn = new ObjectInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public void writeUTF(String text) {
-        try {
-            this.out.writeUTF(text);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -41,11 +32,12 @@ public class ServerClient implements Runnable {
     @Override
     public void run() {
         boolean started = false;
+
         while (this.isConnected) {
             try {
-                String received = this.in.readUTF();
+                String received = this.objIn.readUTF();
 
-                //System.out.println("received: " + received);
+                System.out.println("received: " + received);
 
                 if (received.contains("START1")) {
                     this.server.setPlayer1Ready(true);

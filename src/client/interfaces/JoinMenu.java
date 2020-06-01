@@ -93,6 +93,7 @@ public class JoinMenu extends Interface {
             this.socket = new Socket(this.hostName, this.port);
             ObjectOutputStream out = new ObjectOutputStream(this.socket.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(this.socket.getInputStream());
+            out.flush();
             if (this.socket != null) {
                 this.title.setText("Connected to your friend");
                 this.title.setTranslateX(-80);

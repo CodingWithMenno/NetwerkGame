@@ -16,8 +16,8 @@ import java.net.Socket;
 public class Lobby extends Interface {
 
     private Socket socket;
-    private DataInputStream in;
-    private DataOutputStream out;
+//    private DataInputStream in;
+//    private DataOutputStream out;
     private ObjectInputStream objIn;
     private ObjectOutputStream objOut;
 
@@ -35,10 +35,10 @@ public class Lobby extends Interface {
         this.startButton.setPrefSize(200, 50);
         this.startButton.setOnAction(event -> {
             if (this.isPlayer1) {
-                sendMessageToServer(this.out, "START1");
+                sendMessageToServer(this.objOut, "START1");
                 System.out.println("Sended start1");
             } else {
-                sendMessageToServer(this.out, "START2");
+                sendMessageToServer(this.objOut, "START2");
                 System.out.println("Sended start2");
             }
         });
@@ -52,15 +52,15 @@ public class Lobby extends Interface {
         this.isConnected = true;
         this.startGame = false;
 
-        try {
-            this.in = new DataInputStream(this.socket.getInputStream());
-            this.out = new DataOutputStream(this.socket.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            this.in = new DataInputStream(this.socket.getInputStream());
+//            this.out = new DataOutputStream(this.socket.getOutputStream());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         Thread receiveThread = new Thread(() -> {
-            receiveDataFromSocket(this.in);
+            receiveDataFromSocket(this.objIn);
         });
         receiveThread.start();
     }
@@ -88,7 +88,7 @@ public class Lobby extends Interface {
         }
     }
 
-    private void receiveDataFromSocket(DataInputStream in) {
+    private void receiveDataFromSocket(ObjectInputStream in) {
         String received = "";
         while (this.isConnected) {
             try {
@@ -103,7 +103,7 @@ public class Lobby extends Interface {
         Thread.currentThread().interrupt();
     }
 
-    private void sendMessageToServer(DataOutputStream out, String text) {
+    private void sendMessageToServer(ObjectOutputStream out, String text) {
         try {
             out.writeUTF(text);
         } catch (IOException e) {
