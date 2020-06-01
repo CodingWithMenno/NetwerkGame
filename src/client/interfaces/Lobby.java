@@ -16,10 +16,10 @@ import java.net.Socket;
 public class Lobby extends Interface {
 
     private Socket socket;
-//    private DataInputStream in;
-//    private DataOutputStream out;
-    private ObjectInputStream objIn;
-    private ObjectOutputStream objOut;
+    private DataInputStream in;
+    private DataOutputStream out;
+//    private ObjectInputStream objIn;
+//    private ObjectOutputStream objOut;
 
     private boolean isPlayer1;
     private boolean isConnected;
@@ -29,24 +29,26 @@ public class Lobby extends Interface {
 
     private GameInterface gi = null;
 
-    public Lobby(Socket socket, boolean isPlayer1, ObjectInputStream objIn, ObjectOutputStream objOut) {
+    public Lobby(Socket socket, boolean isPlayer1, DataInputStream in, DataOutputStream out) {
         this.startButton = new Button("Start");
         this.startButton.setFont(Font.font("Helvetica", FontWeight.BOLD, 20));
         this.startButton.setPrefSize(200, 50);
         this.startButton.setOnAction(event -> {
             if (this.isPlayer1) {
-                sendMessageToServer(this.objOut, "START1");
+                sendMessageToServer(this.out, "START1");
                 System.out.println("Sended start1");
             } else {
-                sendMessageToServer(this.objOut, "START2");
+                sendMessageToServer(this.out, "START2");
                 System.out.println("Sended start2");
             }
         });
 
         Client.getMainPane().getChildren().add(this.startButton);
 
-        this.objIn = objIn;
-        this.objOut = objOut;
+//        this.objIn = objIn;
+//        this.objOut = objOut;
+        this.in = in;
+        this.out = out;
         this.socket = socket;
         this.isPlayer1 = isPlayer1;
         this.isConnected = true;
@@ -60,7 +62,7 @@ public class Lobby extends Interface {
 //        }
 
         Thread receiveThread = new Thread(() -> {
-            receiveDataFromSocket(this.objIn);
+            receiveDataFromSocket(this.in);
         });
         receiveThread.start();
     }
@@ -75,11 +77,11 @@ public class Lobby extends Interface {
             System.out.println("Javafx game started");
             Platform.runLater(() -> {
                 if (this.isPlayer1 && this.gi == null) {
-                    this.gi = new GameInterface(new Point2D.Double(300, 200), this.socket, this.objIn, this.objOut);
+                    this.gi = new GameInterface(new Point2D.Double(300, 200), this.socket, this.in, this.out);
                     Client.getMainPane().getChildren().remove(this.startButton);
                     Interface.setInterface(this.gi);
                 } else if (this.gi == null) {
-                    this.gi = new GameInterface(new Point2D.Double(250, 200), this.socket, this.objIn, this.objOut);
+                    this.gi = new GameInterface(new Point2D.Double(250, 200), this.socket, this.in, this.out);
                     Client.getMainPane().getChildren().remove(this.startButton);
                     Interface.setInterface(this.gi);
                 }
@@ -88,7 +90,7 @@ public class Lobby extends Interface {
         }
     }
 
-    private void receiveDataFromSocket(ObjectInputStream in) {
+    private void receiveDataFromSocket(DataInputStream in) {
         String received = "";
         while (this.isConnected) {
             try {
@@ -103,7 +105,7 @@ public class Lobby extends Interface {
         Thread.currentThread().interrupt();
     }
 
-    private void sendMessageToServer(ObjectOutputStream out, String text) {
+    private void sendMessageToServer(DataOutputStream out, String text) {
         try {
             out.writeUTF(text);
         } catch (IOException e) {

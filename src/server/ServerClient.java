@@ -6,10 +6,10 @@ import java.net.Socket;
 public class ServerClient implements Runnable {
 
     private Socket socket;
-//    private DataInputStream in;
-//    private DataOutputStream out;
-    private ObjectInputStream objIn;
-    private ObjectOutputStream objOut;
+    private DataInputStream in;
+    private DataOutputStream out;
+//    private ObjectInputStream objIn;
+//    private ObjectOutputStream objOut;
     private String name;
     private Server server;
     private boolean isConnected = true;
@@ -20,10 +20,18 @@ public class ServerClient implements Runnable {
         this.server = server;
 
         try {
-//            this.in = new DataInputStream(socket.getInputStream());
-//            this.out = new DataOutputStream(socket.getOutputStream());
-            this.objOut = new ObjectOutputStream(socket.getOutputStream());
-            this.objIn = new ObjectInputStream(socket.getInputStream());
+            this.in = new DataInputStream(socket.getInputStream());
+            this.out = new DataOutputStream(socket.getOutputStream());
+//            this.objOut = new ObjectOutputStream(this.socket.getOutputStream());
+//            this.objIn = new ObjectInputStream(this.socket.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void writeUTF(String string) {
+        try {
+            this.out.writeUTF(string);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -35,7 +43,7 @@ public class ServerClient implements Runnable {
 
         while (this.isConnected) {
             try {
-                String received = this.objIn.readUTF();
+                String received = this.in.readUTF();
 
                 System.out.println("received: " + received);
 
@@ -63,11 +71,9 @@ public class ServerClient implements Runnable {
 
         while (connected) {
             try {
-                Object o = this.objIn.readObject();
-                this.server.writePlayerToOtherSocket(this.objOut, o);
+                String o = this.in.readUTF();
+                this.server.writePlayerToOtherSocket(this, o);
             } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
@@ -77,13 +83,13 @@ public class ServerClient implements Runnable {
         return name;
     }
 
-    public ObjectOutputStream getObjOut() {
-        return objOut;
-    }
-
-    public ObjectInputStream getObjIn() {
-        return objIn;
-    }
+//    public ObjectOutputStream getObjOut() {
+//        return objOut;
+//    }
+//
+//    public ObjectInputStream getObjIn() {
+//        return objIn;
+//    }
 
     public Socket getSocket() {
         return socket;

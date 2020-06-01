@@ -94,27 +94,26 @@ public class Server {
 
     public void sendToAllClients(String text) {
         for (ServerClient client : this.serverClients) {
-            try {
-                ObjectOutputStream out = client.getObjOut();
-                out.writeUTF(text);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            client.writeUTF(text);
         }
     }
 
-    public void writePlayerToOtherSocket(ObjectOutputStream objOut, Object o) {
-        try {
-            ObjectOutputStream out;
-            if (objOut.equals(this.serverClients.get(0).getObjOut())) {
-                out = this.serverClients.get(1).getObjOut();
-            } else {
-                out = this.serverClients.get(0).getObjOut();
-            }
-
-            out.writeObject(o);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void writePlayerToOtherSocket(ServerClient serverClient, String text) {
+//        try {
+//            if (objOut.equals(this.serverClients.get(0).getObjOut())) {
+//                out = this.serverClients.get(1).getObjOut();
+//            } else {
+//                out = this.serverClients.get(0).getObjOut();
+//            }
+//
+//            out.writeObject(o);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        if (serverClient.equals(this.serverClients.get(0))) {
+            this.serverClients.get(1).writeUTF(text);
+        } else {
+            this.serverClients.get(0).writeUTF(text);
         }
     }
 

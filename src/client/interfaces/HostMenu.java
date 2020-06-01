@@ -22,10 +22,10 @@ public class HostMenu extends Interface {
     private String hostname;
     private int port = 500;
     private Socket socket;
-//    private DataInputStream dataIn;
-//    private DataOutputStream dataOut;
-    private ObjectOutputStream objOut;
-    private ObjectInputStream objIn;
+    private DataInputStream dataIn;
+    private DataOutputStream dataOut;
+//    private ObjectOutputStream objOut;
+//    private ObjectInputStream objIn;
 
     private Thread readSocketThread;
 
@@ -113,7 +113,7 @@ public class HostMenu extends Interface {
             Platform.runLater(() ->
             {
                 Client.getMainPane().getChildren().remove(this.vBox);
-                Interface.setInterface(new Lobby(this.socket, true, this.objIn, this.objOut));
+                Interface.setInterface(new Lobby(this.socket, true, this.dataIn, this.dataOut));
             });
         }
     }
@@ -139,16 +139,14 @@ public class HostMenu extends Interface {
         try {
             this.socket = new Socket(this.hostname, this.port);
 
-//            this.dataIn = new DataInputStream(socket.getInputStream());
-//            this.dataOut = new DataOutputStream(socket.getOutputStream());
-            this.objOut = new ObjectOutputStream(socket.getOutputStream());
-            this.objIn = new ObjectInputStream(socket.getInputStream());
-
+            this.dataIn = new DataInputStream(socket.getInputStream());
+            this.dataOut = new DataOutputStream(socket.getOutputStream());
+//            this.objOut = new ObjectOutputStream(socket.getOutputStream());
+//            this.objIn = new ObjectInputStream(socket.getInputStream());
             this.readSocketThread = new Thread(() -> {
-                receiveDataFromSocket(this.objIn);
+                receiveDataFromSocket(this.dataIn);
             });
             this.readSocketThread.start();
-
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -156,7 +154,7 @@ public class HostMenu extends Interface {
     }
 
 
-    private void receiveDataFromSocket(ObjectInputStream in) {
+    private void receiveDataFromSocket(DataInputStream in) {
         String received = "";
         try {
             received = in.readUTF();
